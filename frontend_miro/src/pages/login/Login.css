@@ -1,4 +1,3 @@
-/* Login.css */
 .login-page {
   height: 100vh;
   width: 100vw;
@@ -6,7 +5,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* Aseguramos que no haya scrollbar si useEffect falla */
+  overflow: hidden;
 }
 
 .login-card {
@@ -21,34 +20,20 @@
 
 .login-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 30px;
 }
 
-/* Modificado para contener la imagen del logo */
 .logo-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem;
+  margin: 0 auto 10px;
 }
 
-/* Estilo para la imagen del logo */
 .logo-img {
-  max-height: 80px; /* Ajusta este valor según el tamaño de tu logo */
+  max-height: 80px;
   max-width: 100%;
-  object-fit: contain; /* Mantiene la proporción */
-}
-
-.login-header h1 {
-  font-size: 2rem;
-  color: #1f2937;
-  margin: 0;
-  font-weight: 800; /* Un poco más de peso */
-}
-
-.login-header p {
-  color: #6b7280;
-  font-size: 0.9rem;
+  object-fit: contain;
 }
 
 .login-form {
@@ -85,7 +70,7 @@
 }
 
 .main-btn {
-  background: #4f46e5;
+  background: #603b33;
   color: white;
   padding: 14px;
   border: none;
@@ -93,16 +78,16 @@
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.3s, transform 0.1s; /* Añadimos pequeña transición al pulsar */
+  transition: background 0.3s, transform 0.1s;
   margin-top: 0.5rem;
 }
 
 .main-btn:hover {
-  background: #4338ca;
+  background: #cb9489;
 }
 
 .main-btn:active {
-  transform: scale(0.98); /* Pequeño feedback visual al pulsar */
+  transform: scale(0.98);
 }
 
 .login-switch {
@@ -118,7 +103,7 @@
 .login-switch button {
   background: none;
   border: none;
-  color: #4f46e5;
+  color: #603b33;
   font-weight: 700;
   cursor: pointer;
   margin-left: 5px;
