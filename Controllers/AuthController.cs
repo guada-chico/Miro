@@ -1,34 +1,45 @@
 ﻿using Miro.Models;
+using Miro.Dto; // <--- Importante para reconocer tus DTOs
 using Miro.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-[Route("api/[controller]")]
-public class AuthController : ControllerBase
+namespace Miro.Controllers
 {
-    private readonly IAuthService _authService;
-
-    // Inyectamos la interfaz
-    public AuthController(IAuthService authService)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AuthController : ControllerBase
     {
-        _authService = authService;
-    }
+        private readonly IAuthService _authService;
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register(User user, string password)
-    {
-      
-        var result = await _authService.RegisterUserAsync(user, password);
-        if (result == null) return BadRequest("El usuario ya existe.");
-        return Ok(result);
-    }
+        public AuthController(IAuthService authService)
+        {
+            _authService = authService;
+        }
 
-    [HttpPost("login")]
-    public async Task<IActionResult> Login(string email, string password)
-    {
-       
-        var token = await _authService.LoginUserAsync(email, password);
-        if (token == null) return Unauthorized("Email o contraseña incorrectos.");
-        return Ok(new { token });
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserDto request)
+        {
+            // El ModelState.IsValid se comprueba automáticamente por el [ApiController]
+
+            var user = new User
+            {
+                Name = request.Name, // Mapeamos Name a Username
+                Email = request.Email
+            };
+
+            var result = await _authService.RegisterUserAsync(user, request.Password);
+            if (result == null) return BadRequest("El usuario ya existe.");
+
+            return Ok(new { message = "Registro exitoso" });
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        {
+            var token = await _authService.LoginUserAsync(request.Email, request.Password);
+            if (token == null) return Unauthorized("Email o contraseña incorrectos.");
+
+            return Ok(new { token });
+        }
     }
 }

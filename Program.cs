@@ -1,77 +1,79 @@
-using System.Text;
 using Miro.Data;
 using Miro.Services;
 using Miro.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. CONFIGURACIÓN DE LA BASE DE DATOS
+// --- 1. CONFIGURACIÓN DE LA BASE DE DATOS ---
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. REGISTRO DE TODOS LOS SERVICIOS (Inyección de Dependencias)
+// --- 2. REGISTRO DE TUS 8 SERVICIOS (Dependency Injection) ---
+// Registramos cada interfaz con su clase según tu estructura de carpetas
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IFavoritesService, FavoritesService>();
 builder.Services.AddScoped<IFriendshipService, FriendshipService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<IFavoritesService, FavoritesService>();
 builder.Services.AddScoped<IReadingService, ReadingService>();
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 
-// 3. CONFIGURACIÓN DE CORS 
+// Registro especial para Google Books (HttpClient)
+builder.Services.AddHttpClient<IGoogleBookService, GoogleBookService>();
+
+// --- 3. CONFIGURACIÓN DE SEGURIDAD (JWT) ---
+// Asegúrate de tener "Jwt:Key" en tu appsettings.json
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "ClaveSuperSecretaDeMiroProyecto2024!";
+var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+// --- 4. CORS (Para que React no sea bloqueado) ---
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:5173") // URL por defecto de Vite
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
-});
-
-// 4. CONFIGURACIÓN DE AUTENTICACIÓN JWT
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"] ?? "TuClaveSuperSecretaDe32CaracteresMinimo");
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+    options.AddPolicy("AllowReact", policy =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(secretKey)
-    };
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
 });
 
 builder.Services.AddControllers();
-
-// 5. SWAGGER CONFIGURADO PARA SOPORTAR TOKEN JWT
 builder.Services.AddEndpointsApiExplorer();
+
+// --- 5. CONFIGURACIÓN DE SWAGGER ---
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Miro API", Version = "v1" });
+
+    // Configuración para poder pegar el Token en Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Copia y pega el Token JWT así: Bearer {tu_token}",
         Name = "Authorization",
-        In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Escribe 'Bearer ' seguido de tu token JWT."
     });
+
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -86,7 +88,8 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// 6. MIDDLEWARE PIPELINE
+// --- 6. PIPELINE DE MIDDLEWARE (El orden importa) ---
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -95,7 +98,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowReactApp");
+// IMPORTANTE: CORS siempre antes de Auth
+app.UseCors("AllowReact");
 
 app.UseAuthentication();
 app.UseAuthorization();
