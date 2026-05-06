@@ -24,38 +24,28 @@ export default function Login({ setToken }) {
     setConfirmPassword('');
   }, [isRegister]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = (e) => {
+  e.preventDefault();
 
-    if (isRegister) {
-      if (!password || !confirmPassword) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Completa todos los campos' });
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Las contraseñas no coinciden' });
-        return;
-      }
-
-      try {
-        await register(name, email, password);
-        Swal.fire({ icon: 'success', title: 'Registro éxito!', text: 'Ya puedes entrar' });
-        setIsRegister(false);
-      } catch (err) {
-        Swal.fire({ icon: 'error', title: 'Error', text: err.message });
-      }
-    } else {
-      try {
-        const data = await login(email, password);
-        localStorage.setItem('token', data.token);
-        setToken(data.token);
-        navigate('/inicio');
-      } catch (_) {
-        Swal.fire({ icon: 'error', title: 'Acceso denegado', text: 'Revisa tus datos' });
-      }
-    }
-  };
+  // SIMULACIÓN: Aceptamos cualquier usuario que no esté vacío
+  if (email !== "" && password !== "") {
+    Swal.fire({
+      title: '¡Bienvenido!',
+      text: 'Acceso concedido',
+      icon: 'success',
+      confirmButtonText: 'Entrar'
+    }).then(() => {
+      navigate('/inicio'); // Esto te llevará dentro de la app
+    });
+  } else {
+    Swal.fire({
+      title: 'Acceso Denegado',
+      text: 'Por favor, rellena todos los campos',
+      icon: 'error',
+      confirmButtonText: 'Reintentar'
+    });
+  }
+};
 
   return (
     <div className="login-page">

@@ -62,7 +62,6 @@
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.3s;
-  font-family: var(--sans);
 }
 
 .input-box input:focus {
@@ -114,6 +113,29 @@
 
 .login-switch button:hover {
   text-decoration: underline;
+}
+
+/* Cambia la tipografía de todo el pop-up */
+.swal2-popup {
+  font-family: 'Montserrat', sans-serif !important; /* Usa tu variable var(--sans) si la tienes */
+}
+
+/* Específico para el título (Bienvenida/Denegado) */
+.swal2-title {
+  font-weight: 700 !important;
+  color: #2d433d !important;
+}
+
+/* Específico para el texto del mensaje */
+.swal2-html-container {
+  font-size: 1rem !important;
+  color: #666 !important;
+}
+
+/* Estilo del botón de confirmación */
+.swal2-confirm {
+  background-color: #ff6b35 !important; /* Tu naranja característico */
+  border-radius: 12px !important;
 }
 
 @keyframes fadeIn {
