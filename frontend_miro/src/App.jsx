@@ -1,24 +1,35 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-// IMPORTANTE: 'login' en minúscula para que coincida exactamente con tu carpeta
-import Login from './pages/login/Login'; 
+import Sidebar from './components/sidebar/Sidebar';
+import Navbar from './components/navbar/Navbar';
+import Inicio from './pages/inicio/Inicio';
+import Login from './pages/login/Login';
+import './App.css';
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login setToken={setToken} />} />
-        
-        <Route 
-          path="/inicio" 
-          element={token ? <div style={{padding: '50px'}}><h1>Bienvenido a Miro</h1></div> : <Navigate to="/login" />} 
-        />
-
-        {/* Cualquier otra ruta nos manda al login */}
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
+      {token ? (
+        <div className="app-layout">
+          <Sidebar />
+          <div className="content-area">
+            <Navbar />
+            <main className="main-view">
+              <Routes>
+                <Route path="/inicio" element={<Inicio />} />
+                <Route path="*" element={<Navigate to="/inicio" />} />
+              </Routes>
+            </main>
+          </div>
+        </div>
+      ) : (
+        <Routes>
+          <Route path="/login" element={<Login setToken={setToken} />} />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      )}
     </BrowserRouter>
   );
 }

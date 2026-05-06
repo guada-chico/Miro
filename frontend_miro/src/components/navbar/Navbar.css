@@ -1,0 +1,89 @@
+/* Contenedor principal del Header */
+.navbar-top {
+  display: flex;
+  justify-content: flex-end; /* Alinea todo a la derecha */
+  padding: 20px 50px; /* Controla qué tan arriba se ve el h1 de Inicio */
+  background-color: transparent; /* Permite ver el fondo beige del layout */
+}
+
+/* Grupo de acciones (Campana + Usuario) */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+/* Icono de notificaciones */
+.icon-bell {
+  cursor: pointer;
+  color: #333;
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.icon-bell:hover {
+  transform: scale(1.1);
+}
+
+/* Cápsula blanca del usuario */
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  padding: 6px 16px 6px 8px; /* Menos padding a la izquierda para que el círculo luzca mejor */
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  transition: all 0.3s ease;
+}
+
+.user-pill:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  background-color: #fdfdfd;
+}
+
+/* Contenedor circular para la foto o el icono */
+.user-avatar-container {
+  width: 32px;
+  height: 32px;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Clave para que la foto salga redonda */
+  border: 1px solid #e0e0e0;
+}
+
+/* Estilo para cuando pongas una foto real */
+.user-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Icono de usuario por defecto (Lucide) */
+.user-icon-default {
+  color: #666;
+}
+
+/* Texto del nombre de usuario */
+.user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  font-family: var(--sans); /* Usa la variable de fuente de tu proyecto */
+}
+
+/* Flecha de menú desplegable */
+.navbar-actions .chevron-icon {
+  color: #999;
+  transition: transform 0.3s ease;
+}
+
+/* Si el menú está abierto, la flecha gira */
+.navbar-actions .chevron-icon.open {
+  transform: rotate(180deg);
+}
