@@ -9,6 +9,7 @@ import Perfil from './pages/perfil/Perfil';
 import Ajustes from './pages/ajustes/Ajustes';
 import Ayuda from './pages/ayuda/Ayuda';
 import Favoritos from './pages/favoritos/Favoritos'; 
+import Amigos from './pages/amigos/Amigos';
 import './App.css';
 
 function AppContent() {
@@ -33,6 +34,8 @@ function AppContent() {
             <Route path="/recomendaciones" element={<Recomendaciones />} />
             <Route path="/mis-libros" element={<MisLibros />} />
             <Route path="/favoritos" element={<Favoritos />} />
+            <Route path="/amigos" element={<Amigos/>} />
+
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/ajustes" element={<Ajustes />} />
             <Route path="/ayuda" element={<Ayuda />} />

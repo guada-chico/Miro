@@ -47,7 +47,12 @@ export default function Sidebar() {
           >
             <Heart size={18}/> <span>Favoritos</span>
           </li>
-          <li className="nav-item"><Users size={18}/> <span>Amigos</span></li>
+          <li 
+            className={`nav-item ${location.pathname === '/amigos' ? 'active' : ''}`}
+            onClick={() => navigate('/amigos')}
+          >
+            <Users size={18}/> <span>Amigos</span>
+          </li>
         </ul>
 
         <p className="label">OTROS</p>
