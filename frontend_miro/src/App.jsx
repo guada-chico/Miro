@@ -6,6 +6,9 @@ import Biblioteca from './pages/biblioteca/Biblioteca';
 import Recomendaciones from './pages/recomendaciones/Recomendaciones';
 import Favoritos from './pages/favoritos/Favoritos';
 import Perfil from './pages/perfil/Perfil';
+import Ajustes from './pages/ajustes/Ajustes';
+import Ayuda from './pages/ayuda/Ayuda';
+import Login from './pages/login/Login.jsx';
 import './App.css';
 
 export default function App() {
@@ -20,11 +23,14 @@ export default function App() {
           <main className="main-view">
             <Routes>
               {/* Estas rutas deben coincidir EXACTAMENTE con lo que pones en navigate() */}
+              <Route path="/login" element={<Login />} />
               <Route path="/inicio" element={<Inicio />} />
               <Route path="/recomendaciones" element={<Recomendaciones />} />
               <Route path="/mis-libros" element={<Biblioteca />} />
               <Route path="/favoritos" element={<Favoritos/>} />
               <Route path="/perfil" element={<Perfil/>} />
+              <Route path="/ajustes" element={<Ajustes/>} />
+              <Route path="/ayuda" element={<Ayuda/>} />
               
               {/* Redirección por defecto */}
               <Route path="/" element={<Navigate to="/inicio" />} />

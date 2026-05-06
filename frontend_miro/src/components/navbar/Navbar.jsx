@@ -83,7 +83,13 @@ export default function Navbar() {
                 <User size={14}/> Mi Perfil
               </div>
               
-              <div className="dropdown-opt"><Settings size={14}/> Ajustes</div>
+              <div 
+              className="dropdown-opt" 
+              onClick={() => navigate('/ajustes')}
+              >
+                <Settings size="{14}"/> Ajustes
+            </div>
+
               <hr className="divider" />
               
               <div className="dropdown-opt logout-opt" onClick={() => navigate('/login')}>

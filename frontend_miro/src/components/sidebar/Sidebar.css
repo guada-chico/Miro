@@ -48,20 +48,39 @@
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 14px 20px;
-  border-radius: 15px;
+  padding: 12px 18px;
+  text-decoration: none;
+  color: #666;
   cursor: pointer;
-  color: #555;
-  font-weight: 500;
-  transition: 0.2s;
+  transition: all 0.3s ease;
+  border-radius: 12px;
   margin-bottom: 5px;
 }
 
-/* Clase de estado activo que usas en tu JS */
-.nav-item.active { 
-  background: #ff6b35 !important; /* Forzamos tu color naranja[cite: 1] */
-  color: white !important; 
+/* FUERZA EL TAMAÑO DEL ICONO (LOGO) */
+.nav-item svg {
+  width: 18px !important;  /* Tamaño fijo para el icono */
+  height: 18px !important;
+  min-width: 18px;         /* Evita que se encoja */
+  flex-shrink: 0;
+  margin-right: 12px;      /* Espacio con el texto */
+}
+
+/* FUERZA EL TAMAÑO DEL TEXTO */
+.nav-item span {
+  font-size: 0.95rem;      /* Tamaño de texto estándar de dashboard */
+  font-weight: 500;
+  white-space: nowrap;     /* Evita que el texto salte de línea */
+}
+
+/* Estilo cuando está activo (Naranja) */
+.nav-item.active {
+  background-color: #fff5f2;
+  color: #ff6b35;
+}
+
+.nav-item.active svg {
+  color: #ff6b35;
 }
 
 .nav-item:hover:not(.active) { 
@@ -71,9 +90,4 @@
 .logout-btn { 
   color: #ff4d4d !important; 
   margin-top: 20px; 
-}
-
-/* Ajuste para los iconos dentro de los items */
-.nav-item span {
-  font-size: 0.95rem;
 }

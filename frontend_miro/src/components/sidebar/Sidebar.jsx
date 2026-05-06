@@ -52,8 +52,18 @@ export default function Sidebar() {
 
         <p className="label">OTROS</p>
         <ul>
-          <li className="nav-item"><Settings size={18}/> <span>Ajustes</span></li>
-          <li className="nav-item"><HelpCircle size={18}/> <span>Ayuda</span></li>
+          <li 
+            className={`nav-item ${location.pathname === '/ajustes' ? 'active' : ''}`}
+            onClick={() => navigate('/ajustes')}
+          >
+            <Settings size={18}/> <span>Ajustes</span>
+          </li>
+          <li 
+            className={`nav-item ${location.pathname === '/ayuda' ? 'active' : ''}`} 
+            onClick={() => navigate('/ayuda')}
+            >
+              <HelpCircle size="{18}"/> <span>Ayuda</span>
+          </li>
           <li className="nav-item logout-btn" onClick={() => navigate('/login')}>
             <LogOut size={18}/> <span>Cerrar sesión</span>
           </li>
