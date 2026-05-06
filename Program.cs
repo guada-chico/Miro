@@ -23,8 +23,9 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IReadingService, ReadingService>();
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 
-// Registro especial para Google Books (HttpClient)
+// Registro especial para APIS externas que usan HttpClient
 builder.Services.AddHttpClient<IGoogleBookService, GoogleBookService>();
+builder.Services.AddHttpClient<IOpenLibraryService, OpenLibraryService>();
 
 // --- 3. CONFIGURACIÓN DE SEGURIDAD (JWT) ---
 // Asegúrate de tener "Jwt:Key" en tu appsettings.json

@@ -29,15 +29,32 @@ namespace Miro.Services
                 {
                     var info = item.GetProperty("volumeInfo");
 
+                    // --- LÓGICA PARA EXTRAER EL ISBN ---
+                    string? foundIsbn = null;
+                    if (info.TryGetProperty("industryIdentifiers", out var identifiers))
+                    {
+                        foreach (var id in identifiers.EnumerateArray())
+                        {
+                            var type = id.GetProperty("type").GetString();
+                            // Preferimos el ISBN_13, pero aceptamos el ISBN_10
+                            if (type == "ISBN_13" || type == "ISBN_10")
+                            {
+                                foundIsbn = id.GetProperty("identifier").GetString();
+                                if (type == "ISBN_13") break; // Si encontramos el 13, dejamos de buscar
+                            }
+                        }
+                    }
+
                     books.Add(new Book
                     {
                         Title = info.TryGetProperty("title", out var t) ? t.GetString() ?? "Sin título" : "Sin título",
                         Author = info.TryGetProperty("authors", out var a) && a.GetArrayLength() > 0 ? a[0].GetString() ?? "Autor desconocido" : "Autor desconocido",
+                        Isbn = foundIsbn, // <--- AQUÍ SE GUARDA EL ISBN ENCONTRADO
                         Synopsis = info.TryGetProperty("description", out var d) ? d.GetString() ?? "Sin sinopsis" : "Sin sinopsis",
                         TotalPages = info.TryGetProperty("pageCount", out var p) ? p.GetInt32() : 0,
                         Category = info.TryGetProperty("categories", out var c) && c.GetArrayLength() > 0 ? c[0].GetString() ?? "General" : "General",
                         ImageUrl = info.TryGetProperty("imageLinks", out var imgs) && imgs.TryGetProperty("thumbnail", out var thumb)
-                                   ? thumb.GetString()?.Replace("http://", "https://") // Forzamos HTTPS para las portadas
+                                   ? thumb.GetString()?.Replace("http://", "https://")
                                    : null
                     });
                 }
