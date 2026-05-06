@@ -35,8 +35,18 @@ export default function Sidebar() {
             <Sparkles size={18}/> <span>Recomendaciones</span>
           </li>
 
-          <li className="nav-item"><Library size={18}/> <span>Mis libros</span></li>
-          <li className="nav-item"><Heart size={18}/> <span>Favoritos</span></li>
+          <li 
+            className={`nav-item ${location.pathname === '/mis-libros' ? 'active' : ''}`}
+            onClick={() => navigate('/mis-libros')}
+            >
+            <Library size={18}/> <span>Mis libros</span>
+        </li>
+          <li 
+            className={`nav-item ${location.pathname === '/favoritos' ? 'active' : ''}`}
+            onClick={() => navigate('/favoritos')}
+          >
+            <Heart size={18}/> <span>Favoritos</span>
+          </li>
           <li className="nav-item"><Users size={18}/> <span>Amigos</span></li>
         </ul>
 

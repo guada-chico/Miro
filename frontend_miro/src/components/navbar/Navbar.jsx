@@ -1,23 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Importa el hook de navegación
 import { Bell, ChevronDown, User, Settings, LogOut } from 'lucide-react';
 import './Navbar.css';
 
 export default function Navbar() {
+  const navigate = useNavigate(); // 2. Inicializa la función de navegación
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  // Creamos referencias para los contenedores
   const userMenuRef = useRef(null);
   const notiMenuRef = useRef(null);
 
-  // Escuchamos clics en todo el documento
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Si el menú de usuario está abierto y el clic NO fue dentro de su referencia, lo cerramos
       if (showUserMenu && userMenuRef.current && !userMenuRef.current.contains(event.target)) {
         setShowUserMenu(false);
       }
-      // Lo mismo para las notificaciones
       if (showNotifications && notiMenuRef.current && !notiMenuRef.current.contains(event.target)) {
         setShowNotifications(false);
       }
@@ -25,7 +23,6 @@ export default function Navbar() {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      // Limpiamos el evento al desmontar el componente para evitar problemas de memoria
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showUserMenu, showNotifications]);
@@ -36,7 +33,6 @@ export default function Navbar() {
     <header className="navbar-top">
       <div className="navbar-actions">
         
-        {/* SECCIÓN NOTIFICACIONES - Añadimos la ref */}
         <div className="notification-container" ref={notiMenuRef}>
           <div 
             className="icon-bell" 
@@ -63,7 +59,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* SECCIÓN USUARIO - Añadimos la ref */}
         <div 
           className="user-pill" 
           ref={userMenuRef}
@@ -80,10 +75,18 @@ export default function Navbar() {
 
           {showUserMenu && (
             <div className="user-dropdown">
-              <div className="dropdown-opt"><User size={14}/> Mi Perfil</div>
+              {/* 3. Añade el evento onClick para redirigir al perfil[cite: 1] */}
+              <div 
+                className="dropdown-opt" 
+                onClick={() => navigate('/perfil')} 
+              >
+                <User size={14}/> Mi Perfil
+              </div>
+              
               <div className="dropdown-opt"><Settings size={14}/> Ajustes</div>
               <hr className="divider" />
-              <div className="dropdown-opt logout-opt">
+              
+              <div className="dropdown-opt logout-opt" onClick={() => navigate('/login')}>
                 <LogOut size={14}/> Cerrar sesión
               </div>
             </div>

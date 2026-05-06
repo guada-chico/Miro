@@ -2,7 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/sidebar/Sidebar';
 import Navbar from './components/navbar/Navbar';
 import Inicio from './pages/inicio/Inicio';
-import Recomendaciones from './pages/recomendaciones/Recomendaciones'; // <-- Asegúrate de que esto existe
+import Biblioteca from './pages/biblioteca/Biblioteca';
+import Recomendaciones from './pages/recomendaciones/Recomendaciones';
+import Favoritos from './pages/favoritos/Favoritos';
+import Perfil from './pages/perfil/Perfil';
 import './App.css';
 
 export default function App() {
@@ -19,6 +22,9 @@ export default function App() {
               {/* Estas rutas deben coincidir EXACTAMENTE con lo que pones en navigate() */}
               <Route path="/inicio" element={<Inicio />} />
               <Route path="/recomendaciones" element={<Recomendaciones />} />
+              <Route path="/mis-libros" element={<Biblioteca />} />
+              <Route path="/favoritos" element={<Favoritos/>} />
+              <Route path="/perfil" element={<Perfil/>} />
               
               {/* Redirección por defecto */}
               <Route path="/" element={<Navigate to="/inicio" />} />
