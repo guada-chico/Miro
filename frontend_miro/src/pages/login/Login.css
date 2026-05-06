@@ -6,6 +6,7 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  font-family: var(--sans);
 }
 
 .login-card {
@@ -61,6 +62,7 @@
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.3s;
+  font-family: var(--sans);
 }
 
 .input-box input:focus {
