@@ -1,0 +1,143 @@
+.reco-container {
+  animation: fadeIn 0.4s ease;
+  font-family: var(--sans)
+}
+
+.reco-header {
+  margin-bottom: 30px;
+}
+
+.reco-title-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.reco-header h1 {
+  font-size: 2.8rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.reco-header p {
+  color: #888;
+  margin-top: 5px;
+  font-size: 1rem;
+}
+
+.back-btn {
+  background: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: 0.2s;
+}
+
+.back-btn:hover {
+  background: #fdfdfd;
+  transform: translateX(-3px);
+}
+
+/* GRID DE LIBROS */
+.reco-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columnas como en tu diseño */
+  gap: 25px;
+}
+
+.reco-card {
+  background: white;
+  padding: 15px;
+  border-radius: 25px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+  transition: transform 0.3s ease;
+}
+
+.reco-card:hover {
+  transform: translateY(-8px);
+}
+
+.reco-img-wrapper {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 2/3;
+  background: #f9f9f9;
+}
+
+.reco-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ACCIONES AL PASAR EL RATÓN */
+.reco-hover-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.reco-card:hover .reco-hover-actions {
+  opacity: 1;
+}
+
+.reco-icon-btn {
+  background: white;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ff6b35;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* INFO DEL LIBRO */
+.reco-info {
+  margin-top: 15px;
+}
+
+.reco-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #ff6b35;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+}
+
+.reco-info h4 {
+  font-size: 1.05rem;
+  margin: 0 0 4px 0;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reco-info p {
+  color: #999;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,27 +1,52 @@
-import { Home, Sparkles, Library, Heart, Users, Settings, HelpCircle, LogOut } from 'lucide-react';
-import logoMiro from '../../assets/logo_miro_sf.png';
-import './Sidebar.css';
+import { useNavigate, useLocation } from "react-router-dom";
+import { Home, Sparkles, Library, Heart, Users, Settings, HelpCircle, LogOut } from "lucide-react";
+import logoMiro from "../../assets/logo_miro_sf.png";
+import "./Sidebar.css";
 
 export default function Sidebar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <img src={logoMiro} alt="Miro" />
+        <img 
+          src={logoMiro} 
+          alt="Miro" 
+          onClick={() => navigate('/inicio')} 
+          style={{ cursor: 'pointer' }} 
+        />
       </div>
+      
       <nav className="sidebar-menu">
         <p className="label">MENU</p>
         <ul>
-          <li className="active"><Home size={18}/> Inicio</li>
-          <li><Sparkles size={18}/> Recomendaciones</li>
-          <li><Library size={18}/> Mis libros</li>
-          <li><Heart size={18}/> Favoritos</li>
-          <li><Users size={18}/> Amigos</li>
+          <li 
+            className={`nav-item ${location.pathname === '/inicio' ? 'active' : ''}`}
+            onClick={() => navigate('/inicio')}
+          >
+            <Home size={18}/> <span>Inicio</span>
+          </li>
+
+          <li 
+            className={`nav-item ${location.pathname === '/recomendaciones' ? 'active' : ''}`}
+            onClick={() => navigate('/recomendaciones')}
+          >
+            <Sparkles size={18}/> <span>Recomendaciones</span>
+          </li>
+
+          <li className="nav-item"><Library size={18}/> <span>Mis libros</span></li>
+          <li className="nav-item"><Heart size={18}/> <span>Favoritos</span></li>
+          <li className="nav-item"><Users size={18}/> <span>Amigos</span></li>
         </ul>
+
         <p className="label">OTROS</p>
         <ul>
-          <li><Settings size={18}/> Ajustes</li>
-          <li><HelpCircle size={18}/> Ayuda</li>
-          <li className="logout-btn"><LogOut size={18}/> Cerrar sesión</li>
+          <li className="nav-item"><Settings size={18}/> <span>Ajustes</span></li>
+          <li className="nav-item"><HelpCircle size={18}/> <span>Ayuda</span></li>
+          <li className="nav-item logout-btn" onClick={() => navigate('/login')}>
+            <LogOut size={18}/> <span>Cerrar sesión</span>
+          </li>
         </ul>
       </nav>
     </aside>

@@ -1,7 +1,10 @@
 import { Search, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './Inicio.css';
 
 export default function Inicio() {
+  const navigate = useNavigate();
+
   return (
     <div className="inicio-content">
       {/* SECCIÓN HERO Y BUSCADOR */}
@@ -19,17 +22,19 @@ export default function Inicio() {
         </div>
       </section>
 
-      {/* NUEVA SECCIÓN: LIBRO LEYENDO */}
+      {/* SECCIÓN: CONTINUAR LEYENDO */}
       <section className="reading-now-section">
         <div className="section-head">
           <h3>Continuar leyendo</h3>
         </div>
         <div className="reading-card">
-          <img 
-            src="https://m.media-amazon.com/images/I/819js3EQ76L.jpg" 
-            alt="Libro actual" 
-            className="reading-cover"
-          />
+          <div className="reading-cover-container">
+            <img 
+              src="https://m.media-amazon.com/images/I/819js3EQ76L.jpg" 
+              alt="The Picture of Dorian Gray" 
+              className="reading-cover" 
+            />
+          </div>
           <div className="reading-info">
             <h4>The Picture of Dorian Gray</h4>
             <p className="author">Oscar Wilde</p>
@@ -48,17 +53,28 @@ export default function Inicio() {
       <section className="books-section">
         <div className="section-head">
           <h3>Libros recomendados</h3>
-          <span className="orange-link">Ver todos &gt;</span>
+          {/* Usamos un span con onClick para no romper el CSS con etiquetas <a> */}
+          <span 
+            className="orange-link" 
+            onClick={() => navigate('/recomendaciones')}
+            style={{ cursor: 'pointer' }}
+          >
+            Ver todos &gt;
+          </span>
         </div>
         <div className="books-grid">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="book-card">
-              <img 
-                src={`https://m.media-amazon.com/images/I/71HkvkI29kL.jpg`} 
-                alt="Libro recomendado" 
-              />
-            </div>
-          ))}
+          <div className="book-card">
+            <img src="https://m.media-amazon.com/images/I/71HkvkI29kL.jpg" alt="Libro 1" />
+          </div>
+          <div className="book-card">
+            <img src="https://m.media-amazon.com/images/I/71HkvkI29kL.jpg" alt="Libro 2" />
+          </div>
+          <div className="book-card">
+            <img src="https://m.media-amazon.com/images/I/71HkvkI29kL.jpg" alt="Libro 3" />
+          </div>
+          <div className="book-card">
+            <img src="https://m.media-amazon.com/images/I/71HkvkI29kL.jpg" alt="Libro 4" />
+          </div>
         </div>
       </section>
     </div>

@@ -1,39 +1,51 @@
 .sidebar {
   width: 260px;
+  min-width: 260px; /* Evita que el sidebar se encoja */
   background: #ffffff;
   height: 100vh;
   padding: 40px 20px;
   border-radius: 0 40px 40px 0;
   display: flex;
   flex-direction: column;
+  box-shadow: 10px 0 30px rgba(0,0,0,0.02);
   font-family: var(--sans);
 }
+
+/* Contenedor del logo centrado */
 .sidebar-brand {
   display: flex;
+  justify-content: center; /* Centra el logo horizontalmente */
   align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  padding-left: 10px;
+  margin-bottom: 10px;
+  padding: 0; /* Eliminamos padding lateral para un centrado real */
 }
 
 .sidebar-brand img { 
-    width: 175px; 
-    height: auto; 
+  width: 170px; /* Tamaño controlado para que no se vea gigante como en la captura */
+  height: auto; 
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.sidebar-brand img:hover {
+  transform: scale(1.05);
 }
 
 .label { 
-    font-size: 0.75rem; 
-    color: #bbb; 
-    font-weight: 700; 
-    margin: 25px 0 15px 15px; 
+  font-size: 0.75rem; 
+  color: #bbb; 
+  font-weight: 700; 
+  margin: 25px 0 15px 15px; 
+  letter-spacing: 1px;
 }
 
 .sidebar-menu ul { 
-    list-style: none; 
-    padding: 0; 
+  list-style: none; 
+  padding: 0; 
 }
 
-.sidebar-menu li {
+/* Estilo para tus elementos de lista .nav-item */
+.nav-item {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -43,16 +55,25 @@
   color: #555;
   font-weight: 500;
   transition: 0.2s;
-}
-.sidebar-menu li.active { 
-    background: #ff6b35; 
-    color: white; 
+  margin-bottom: 5px;
 }
 
-.sidebar-menu li:hover:not(.active) { 
-    background: #f5f5f5; 
+/* Clase de estado activo que usas en tu JS */
+.nav-item.active { 
+  background: #ff6b35 !important; /* Forzamos tu color naranja[cite: 1] */
+  color: white !important; 
+}
+
+.nav-item:hover:not(.active) { 
+  background: #f5f5f5; 
 }
 
 .logout-btn { 
-    color: #ff4d4d !important; 
-    margin-top: 20px; }
+  color: #ff4d4d !important; 
+  margin-top: 20px; 
+}
+
+/* Ajuste para los iconos dentro de los items */
+.nav-item span {
+  font-size: 0.95rem;
+}

@@ -1,8 +1,12 @@
+.inicio-content {
+  animation: fadeIn 0.4s ease;
+  font-family: var(--sans)
+}
+
 .hero h1 { 
   font-size: 2.5rem; 
   font-weight: 500; 
   margin-bottom: 25px; 
-  font-family: var(--sans);
 }
 
 .search-capsule {
@@ -13,7 +17,6 @@
   border-radius: 20px;
   max-width: 800px;
   gap: 15px;
-  font-family: var(--sans);
 }
 
 .search-cat { 
@@ -46,12 +49,10 @@
   border-radius: 12px; 
   font-weight: 600; 
   cursor: pointer; 
-  font-family: var(--sans);
 }
 
 .books-section { 
   margin-top: 50px; 
-  font-family: var(--sans);
 }
 
 .section-head { 
@@ -82,7 +83,6 @@
 /* --- ESTILOS PARA "LIBRO LEYENDO" --- */
 .reading-now-section {
   margin-top: 40px;
-  font-family: var(--sans);
 }
 
 .reading-card {
