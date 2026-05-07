@@ -121,7 +121,7 @@ export default function Biblioteca() {
 
                 return (
                   <div key={item.id} className="book-item-horizontal">
-                    <img src={book.coverImageUrl || 'https://via.placeholder.com/80x120?text=Sin+portada'} alt={book.title} />
+                    <img src={book.imageUrl || book.coverImageUrl || 'https://via.placeholder.com/80x120?text=Sin+portada'} alt={book.title} />
                     <div className="book-item-info">
                       <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                         {tabActiva === 'leídos' ? 

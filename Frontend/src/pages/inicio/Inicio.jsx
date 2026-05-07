@@ -13,20 +13,52 @@ export default function Inicio() {
   const [classics, setClassics] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [searchError, setSearchError] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    // Cargar lectura actual
     getCurrentReading()
       .then(setCurrentReading)
       .catch(() => setCurrentReading(null));
 
-    // Cargar recomendaciones
+    // Intentar recomendaciones del backend; si vienen vacías o falla,
+    // usar los clásicos populares de Gutenberg como fallback
     getMyRecommendations()
-      .then(setRecommendations)
-      .catch(() => setRecommendations([]));
+      .then((data) => {
+        if (data && data.length > 0) {
+          setRecommendations(data);
+        } else {
+          // Sin favoritos aún → mostrar populares de Gutenberg
+          return getTopClassics(8).then((classics) => {
+            // Normalizar al mismo formato que usa el template
+            const normalized = classics.map((b) => ({
+              id: b.id,
+              title: b.title,
+              imageUrl: b.coverUrl,
+              author: b.authors?.[0] ?? 'Autor desconocido',
+              readUrl: b.readUrl,
+            }));
+            setRecommendations(normalized);
+          });
+        }
+      })
+      .catch(() => {
+        // Si falla la autenticación, cargar Gutenberg directamente
+        getTopClassics(8)
+          .then((classics) => {
+            const normalized = classics.map((b) => ({
+              id: b.id,
+              title: b.title,
+              imageUrl: b.coverUrl,
+              author: b.authors?.[0] ?? 'Autor desconocido',
+              readUrl: b.readUrl,
+            }));
+            setRecommendations(normalized);
+          })
+          .catch(() => setRecommendations([]));
+      });
 
-    // Cargar clásicos gratuitos de Gutenberg
+    // Clásicos de la sección inferior (diferente selección)
     getTopClassics(8)
       .then(setClassics)
       .catch(() => setClassics([]));
@@ -36,12 +68,17 @@ export default function Inicio() {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     setIsSearching(true);
+    setSearchError('');
+    setSearchResults([]);
     try {
-      // Buscar en Google Books + Open Library (portadas de alta calidad)
       const results = await searchExternalBooks(searchQuery);
+      if (results.length === 0) {
+        setSearchError('No se encontraron resultados. Prueba con otro término.');
+      }
       setSearchResults(results);
-    } catch {
-      setSearchResults([]);
+    } catch (err) {
+      console.error('Error en búsqueda:', err);
+      setSearchError('Error al buscar. Comprueba que el backend está activo.');
     } finally {
       setIsSearching(false);
     }
@@ -71,6 +108,9 @@ export default function Inicio() {
         </form>
 
         {/* Resultados de búsqueda */}
+        {searchError && (
+          <p style={{ marginTop: '1rem', color: '#e55a25', fontSize: '0.9rem' }}>{searchError}</p>
+        )}
         {searchResults.length > 0 && (
           <div style={{ marginTop: '1.5rem' }}>
             <h3 style={{ marginBottom: '1rem', fontSize: '1rem', color: '#555' }}>
@@ -78,11 +118,11 @@ export default function Inicio() {
             </h3>
             <div className="books-grid">
               {searchResults.map((book, i) => (
-                <div key={book.isbn || i} className="book-card" title={`${book.title} — ${book.author}`}>
+                <div key={book.isbn || book.id || i} className="book-card" title={`${book.title} — ${book.author}`}>
                   {book.imageUrl
                     ? <img src={book.imageUrl} alt={book.title} />
                     : (
-                      <div style={{ padding: '0.5rem', fontSize: '0.75rem', textAlign: 'center', color: '#888' }}>
+                      <div style={{ padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {book.title}
                       </div>
                     )
@@ -103,7 +143,7 @@ export default function Inicio() {
           <div className="reading-card">
             <div className="reading-cover-container">
               <img
-                src={currentReading.book?.coverImageUrl || 'https://via.placeholder.com/120x180?text=Sin+portada'}
+                src={currentReading.book?.imageUrl || currentReading.book?.coverImageUrl || 'https://via.placeholder.com/120x180?text=Sin+portada'}
                 alt={currentReading.book?.title}
                 className="reading-cover"
               />
@@ -148,21 +188,23 @@ export default function Inicio() {
         </div>
         <div className="books-grid">
           {recommendations.slice(0, 4).map((book) => (
-            <div key={book.id} className="book-card">
-              {book.coverImageUrl
-                ? <img src={book.coverImageUrl} alt={book.title} />
-                : <div style={{ padding: '1rem', fontSize: '0.8rem', textAlign: 'center' }}>{book.title}</div>
+            <div
+              key={book.id}
+              className="book-card"
+              style={{ cursor: book.readUrl ? 'pointer' : 'default' }}
+              onClick={() => book.readUrl && window.open(book.readUrl, '_blank')}
+              title={`${book.title}${book.author ? ` — ${book.author}` : ''}`}
+            >
+              {book.imageUrl
+                ? <img src={book.imageUrl} alt={book.title} />
+                : (
+                  <div style={{ padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {book.title}
+                  </div>
+                )
               }
             </div>
           ))}
-          {recommendations.length === 0 && (
-            <>
-              <div className="book-card"><img src="https://m.media-amazon.com/images/I/71HkvkI29kL.jpg" alt="Libro" /></div>
-              <div className="book-card"><img src="https://m.media-amazon.com/images/I/71HkvkI29kL.jpg" alt="Libro" /></div>
-              <div className="book-card"><img src="https://m.media-amazon.com/images/I/71HkvkI29kL.jpg" alt="Libro" /></div>
-              <div className="book-card"><img src="https://m.media-amazon.com/images/I/71HkvkI29kL.jpg" alt="Libro" /></div>
-            </>
-          )}
         </div>
       </section>
 

@@ -59,7 +59,7 @@ export default function Favoritos() {
             favoritos.map((book) => (
               <div key={book.id} className="reco-card" onClick={() => setSelectedBook(book)}>
                 <div className="reco-img-wrapper">
-                  <img src={book.coverImageUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'} alt={book.title} />
+                  <img src={book.imageUrl || book.coverImageUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'} alt={book.title} />
                   <div className="reco-hover-actions">
                     <button className="reco-icon-btn active" onClick={(e) => handleToggleFavorite(e, book.id)}>
                       <Heart size={18} fill="#ff6b35" />
@@ -96,7 +96,7 @@ export default function Favoritos() {
               <X size={24} />
             </button>
             <div className="modal-body">
-              <img src={selectedBook.coverImageUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'} alt={selectedBook.title} className="modal-img" />
+              <img src={selectedBook.imageUrl || selectedBook.coverImageUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'} alt={selectedBook.title} className="modal-img" />
               <div className="modal-details">
                 <div className="reco-rating">
                   <Star size={18} fill="#ff6b35" color="#ff6b35" />

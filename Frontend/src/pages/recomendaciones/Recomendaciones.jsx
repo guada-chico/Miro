@@ -14,8 +14,42 @@ export default function Recomendaciones() {
 
   useEffect(() => {
     getMyRecommendations()
-      .then(setBooks)
-      .catch(() => setBooks([]))
+      .then((data) => {
+        if (data && data.length > 0) {
+          // El backend devuelve campo "imageUrl" (no coverImageUrl)
+          setBooks(data);
+        } else {
+          // Sin favoritos → cargar populares de Gutenberg como fallback
+          import('../../services/external-books-service').then(({ getTopClassics }) => {
+            getTopClassics(20).then((classics) => {
+              const normalized = classics.map((b) => ({
+                id: b.id,
+                title: b.title,
+                author: b.authors?.[0] ?? 'Autor desconocido',
+                imageUrl: b.coverUrl,
+                description: null,
+                readUrl: b.readUrl,
+              }));
+              setBooks(normalized);
+            });
+          });
+        }
+      })
+      .catch(() => {
+        import('../../services/external-books-service').then(({ getTopClassics }) => {
+          getTopClassics(20).then((classics) => {
+            const normalized = classics.map((b) => ({
+              id: b.id,
+              title: b.title,
+              author: b.authors?.[0] ?? 'Autor desconocido',
+              imageUrl: b.coverUrl,
+              description: null,
+              readUrl: b.readUrl,
+            }));
+            setBooks(normalized);
+          }).catch(() => setBooks([]));
+        });
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -56,7 +90,7 @@ export default function Recomendaciones() {
           {books.map((book) => (
             <div key={book.id} className="reco-card" onClick={() => setSelectedBook(book)}>
               <div className="reco-img-wrapper">
-                <img src={book.coverImageUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'} alt={book.title} />
+                <img src={book.imageUrl || book.coverImageUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'} alt={book.title} />
                 <div className="reco-hover-actions">
                   <button className="reco-icon-btn" onClick={(e) => handleToggleFavorite(e, book.id)}>
                     <Heart size={18} />
@@ -87,7 +121,7 @@ export default function Recomendaciones() {
             </button>
             
             <div className="modal-body">
-              <img src={selectedBook.coverImageUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'} alt={selectedBook.title} className="modal-img" />
+              <img src={selectedBook.imageUrl || selectedBook.coverImageUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'} alt={selectedBook.title} className="modal-img" />
               <div className="modal-details">
                 <div className="reco-rating">
                   <Star size={18} fill="#ff6b35" color="#ff6b35" />
