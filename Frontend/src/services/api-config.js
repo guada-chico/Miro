@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// URL temporal del backend de .NET
-const API_URL = 'https://localhost:7000/api'; 
+// URL del backend .NET (puerto HTTPS del perfil "https" en launchSettings.json)
+const API_URL = 'https://localhost:7072/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -11,6 +11,7 @@ export const getValidToken = () => {
   return localStorage.getItem('token');
 };
 
+// Adjunta el token JWT en cada petición si existe
 api.interceptors.request.use((config) => {
   const token = getValidToken();
   if (token) {
@@ -18,5 +19,17 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Redirige al login si el backend devuelve 401
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

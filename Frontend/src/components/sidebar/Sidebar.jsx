@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Sparkles, Library, Heart, Users, Settings, HelpCircle, LogOut } from "lucide-react";
+import { Home, Sparkles, Library, Heart, Users, BookMarked, Settings, HelpCircle, LogOut } from "lucide-react";
 import logoMiro from "../../assets/logo_miro_sf.png";
 import "./Sidebar.css";
 
@@ -52,6 +52,12 @@ export default function Sidebar() {
             onClick={() => navigate('/amigos')}
           >
             <Users size={18}/> <span>Amigos</span>
+          </li>
+          <li 
+            className={`nav-item ${location.pathname === '/clasicos' ? 'active' : ''}`}
+            onClick={() => navigate('/clasicos')}
+          >
+            <BookMarked size={18}/> <span>Clásicos gratis</span>
           </li>
         </ul>
 

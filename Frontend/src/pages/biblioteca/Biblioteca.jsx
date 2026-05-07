@@ -1,29 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, CheckCircle, Calendar as CalendarIcon, Trophy, Plus, ArrowLeft } from 'lucide-react';
+import { getMyLibrary } from '../../services/reading-service';
 import './Biblioteca.css';
 
 export default function Biblioteca() {
   const navigate = useNavigate();
   const [tabActiva, setTabActiva] = useState('leyendo');
+  const [misLibrosData, setMisLibrosData] = useState({
+    leyendo: [],
+    leídos: [],
+    'por leer': []
+  });
+  const [loading, setLoading] = useState(true);
 
-  // 1. Estructura de datos organizada por categorías
-  const misLibrosData = {
-    leyendo: [
-      { id: 1, title: "Atomic Habits", author: "James Clear", progress: 75, img: "https://m.media-amazon.com/images/I/81wgcwbW6UL.jpg" },
-      { id: 2, title: "Deep Work", author: "Cal Newport", progress: 30, img: "https://m.media-amazon.com/images/I/417P969h7uL.jpg" }
-    ],
-    leídos: [
-      { id: 3, title: "The Alchemist", author: "Paulo Coelho", progress: 100, img: "https://m.media-amazon.com/images/I/71aFt4+OTzL.jpg" },
-      { id: 4, title: "Zero to One", author: "Peter Thiel", progress: 100, img: "https://m.media-amazon.com/images/I/71uAI28RwFL.jpg" }
-    ],
-    "por leer": [
-      { id: 5, title: "The Psychology of Money", author: "Morgan Housel", progress: 0, img: "https://m.media-amazon.com/images/I/71TR7Z7N9RL.jpg" },
-      { id: 6, title: "Clean Code", author: "Robert C. Martin", progress: 0, img: "https://m.media-amazon.com/images/I/41xShlnTZTL.jpg" }
-    ]
-  };
+  useEffect(() => {
+    getMyLibrary()
+      .then((library) => {
+        // Agrupar por estado
+        const grouped = {
+          leyendo: library.filter((item) => item.status === 'Reading'),
+          leídos: library.filter((item) => item.status === 'Completed'),
+          'por leer': library.filter((item) => item.status === 'WantToRead')
+        };
+        setMisLibrosData(grouped);
+      })
+      .catch(() => {
+        setMisLibrosData({ leyendo: [], leídos: [], 'por leer': [] });
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  const retoAnual = { objetivo: 24, leidos: 12 };
+  const retoAnual = { objetivo: 24, leidos: misLibrosData.leídos.length };
   const porcentajeReto = (retoAnual.leidos / retoAnual.objetivo) * 100;
 
   const lecturaReciente = [
@@ -52,10 +60,10 @@ export default function Biblioteca() {
             <h3>Desafío 2026</h3>
             <p>{retoAnual.leidos} de {retoAnual.objetivo} libros leídos</p>
             <div className="progress-bar-large">
-              <div className="progress-fill" style={{ width: `${porcentajeReto}%` }}></div>
+              <div className="progress-fill" style={{ width: `${Math.min(porcentajeReto, 100)}%` }}></div>
             </div>
           </div>
-          <span className="stat-percent">{Math.round(porcentajeReto)}%</span>
+          <span className="stat-percent">{Math.round(Math.min(porcentajeReto, 100))}%</span>
         </div>
 
         <div className="stat-card">
@@ -64,7 +72,7 @@ export default function Biblioteca() {
           </div>
           <div className="stat-info">
             <h3>Total Leídos</h3>
-            <p className="big-number">148</p>
+            <p className="big-number">{misLibrosData.leídos.length}</p>
           </div>
         </div>
       </div>
@@ -102,33 +110,43 @@ export default function Biblioteca() {
           </div>
 
           <div className="books-mini-grid">
-            {/* 2. Renderizado dinámico basado en la pestaña activa */}
-            {misLibrosData[tabActiva].map((book) => (
-              <div key={book.id} className="book-item-horizontal">
-                <img src={book.img} alt={book.title} />
-                <div className="book-item-info">
-                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                    {/* Cambiamos el icono según el estado */}
-                    {tabActiva === 'leídos' ? 
-                      <CheckCircle size={16} color="#4caf50" /> : 
-                      <BookOpen size={16} color="#ff6b35" />
-                    }
-                    <h4>{book.title}</h4>
-                  </div>
-                  <p>{book.author}</p>
-                  
-                  {/* Solo mostramos progreso si no es "por leer" */}
-                  {tabActiva !== 'por leer' && (
-                    <div className="mini-progress">
-                      <div className="progress-bar-small">
-                        <div className="fill" style={{width: `${book.progress}%`}}></div>
+            {loading ? (
+              <p style={{ textAlign: 'center', color: '#aaa' }}>Cargando biblioteca...</p>
+            ) : misLibrosData[tabActiva].length > 0 ? (
+              misLibrosData[tabActiva].map((item) => {
+                const book = item.book || item;
+                const progress = item.book?.totalPages > 0
+                  ? Math.round((item.currentPage / item.book.totalPages) * 100)
+                  : 0;
+
+                return (
+                  <div key={item.id} className="book-item-horizontal">
+                    <img src={book.coverImageUrl || 'https://via.placeholder.com/80x120?text=Sin+portada'} alt={book.title} />
+                    <div className="book-item-info">
+                      <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                        {tabActiva === 'leídos' ? 
+                          <CheckCircle size={16} color="#4caf50" /> : 
+                          <BookOpen size={16} color="#ff6b35" />
+                        }
+                        <h4>{book.title}</h4>
                       </div>
-                      <span>{book.progress}%</span>
+                      <p>{book.author}</p>
+                      
+                      {tabActiva !== 'por leer' && (
+                        <div className="mini-progress">
+                          <div className="progress-bar-small">
+                            <div className="fill" style={{width: `${progress}%`}}></div>
+                          </div>
+                          <span>{progress}%</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
-            ))}
+                  </div>
+                );
+              })
+            ) : (
+              <p style={{ textAlign: 'center', color: '#aaa' }}>No hay libros en esta categoría</p>
+            )}
 
             <button className="add-book-btn">
               <Plus size={24} />

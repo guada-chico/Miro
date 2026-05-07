@@ -24,28 +24,60 @@ export default function Login({ setToken }) {
     setConfirmPassword('');
   }, [isRegister]);
 
-  const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // SIMULACIÓN: Aceptamos cualquier usuario que no esté vacío
-  if (email !== "" && password !== "") {
-    Swal.fire({
-      title: '¡Bienvenido!',
-      text: 'Acceso concedido',
-      icon: 'success',
-      confirmButtonText: 'Entrar'
-    }).then(() => {
-      navigate('/inicio'); // Esto te llevará dentro de la app
-    });
-  } else {
-    Swal.fire({
-      title: 'Acceso Denegado',
-      text: 'Por favor, rellena todos los campos',
-      icon: 'error',
-      confirmButtonText: 'Reintentar'
-    });
-  }
-};
+    try {
+      if (isRegister) {
+        // Validar que las contraseñas coincidan
+        if (password !== confirmPassword) {
+          Swal.fire({
+            title: 'Error',
+            text: 'Las contraseñas no coinciden',
+            icon: 'error',
+            confirmButtonText: 'Reintentar'
+          });
+          return;
+        }
+
+        // Llamar al servicio de registro
+        await register(name, email, password);
+        
+        Swal.fire({
+          title: '¡Registro exitoso!',
+          text: 'Ahora puedes iniciar sesión',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+        
+        // Cambiar a modo login
+        setIsRegister(false);
+        setName('');
+        setPassword('');
+        setConfirmPassword('');
+      } else {
+        // Llamar al servicio de login
+        await login(email, password);
+        
+        Swal.fire({
+          title: '¡Bienvenido!',
+          text: 'Acceso concedido',
+          icon: 'success',
+          confirmButtonText: 'Entrar',
+          timer: 1500
+        }).then(() => {
+          navigate('/inicio');
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: error.response?.data?.message || error.message || 'Credenciales incorrectas',
+        icon: 'error',
+        confirmButtonText: 'Reintentar'
+      });
+    }
+  };
 
   return (
     <div className="login-page">

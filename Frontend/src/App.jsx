@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import Sidebar from './components/sidebar/Sidebar';
 import Navbar from './components/navbar/Navbar';
 import Inicio from './pages/inicio/Inicio';
-import Login from './pages/login/Login'; // Asegúrate de tener tu Login importado
+import Login from './pages/login/Login';
 import Recomendaciones from './pages/recomendaciones/Recomendaciones';
 import MisLibros from './pages/biblioteca/Biblioteca';
 import Perfil from './pages/perfil/Perfil';
@@ -10,6 +10,7 @@ import Ajustes from './pages/ajustes/Ajustes';
 import Ayuda from './pages/ayuda/Ayuda';
 import Favoritos from './pages/favoritos/Favoritos'; 
 import Amigos from './pages/amigos/Amigos';
+import Clasicos from './pages/clasicos/Clasicos';
 import './App.css';
 
 function AppContent() {
@@ -35,6 +36,7 @@ function AppContent() {
             <Route path="/mis-libros" element={<MisLibros />} />
             <Route path="/favoritos" element={<Favoritos />} />
             <Route path="/amigos" element={<Amigos/>} />
+            <Route path="/clasicos" element={<Clasicos />} />
 
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/ajustes" element={<Ajustes />} />

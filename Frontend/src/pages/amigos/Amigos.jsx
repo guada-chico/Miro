@@ -1,38 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, UserPlus, MessageCircle, BookOpen, Star } from 'lucide-react';
+import { ArrowLeft, Search, UserPlus, MessageCircle, BookOpen } from 'lucide-react';
+import { getMyFriends, sendFriendRequest } from '../../services/friendship-service';
 import './Amigos.css';
 
 export default function Amigos() {
   const navigate = useNavigate();
-  
-  // Datos de ejemplo para la lista de amigos
-  const [amigos] = useState([
-    {
-      id: 1,
-      nombre: "Carla Ramos",
-      avatar: "https://i.pravatar.cc/150?u=carla",
-      librosLeidos: 24,
-      leyendo: "The Seven Husbands of Evelyn Hugo",
-      online: true
-    },
-    {
-      id: 2,
-      nombre: "Marcos Soler",
-      avatar: "https://i.pravatar.cc/150?u=marcos",
-      librosLeidos: 12,
-      leyendo: "Sapiens",
-      online: false
-    },
-    {
-      id: 3,
-      nombre: "Elena Gil",
-      avatar: "https://i.pravatar.cc/150?u=elena",
-      librosLeidos: 45,
-      leyendo: "The Silent Patient",
-      online: true
+  const [amigos, setAmigos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [receiverId, setReceiverId] = useState('');
+
+  useEffect(() => {
+    getMyFriends()
+      .then(setAmigos)
+      .catch(() => setAmigos([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleSendRequest = async () => {
+    const id = parseInt(receiverId);
+    if (!id) return;
+    try {
+      await sendFriendRequest(id);
+      setReceiverId('');
+      alert('Solicitud enviada');
+    } catch {
+      alert('No se pudo enviar la solicitud');
     }
-  ]);
+  };
 
   return (
     <div className="amigos-container">
@@ -46,48 +41,61 @@ export default function Amigos() {
         <p>Conecta con otros lectores y descubre qué están leyendo</p>
       </header>
 
-      {/* SECCIÓN DE BUSCADOR Y SUGERENCIAS */}
+      {/* SECCIÓN DE BUSCADOR Y ENVÍO DE SOLICITUD */}
       <div className="amigos-top-bar">
         <div className="search-bar-amigos">
           <Search size={20} color="#bbb" />
-          <input type="text" placeholder="Buscar por nombre o usuario..." />
+          <input
+            type="number"
+            placeholder="ID del usuario para agregar..."
+            value={receiverId}
+            onChange={(e) => setReceiverId(e.target.value)}
+          />
         </div>
-        <button className="add-friend-btn">
-          <UserPlus size={18} /> Invitar amigos
+        <button className="add-friend-btn" onClick={handleSendRequest}>
+          <UserPlus size={18} /> Enviar solicitud
         </button>
       </div>
 
-      <div className="amigos-grid">
-        {amigos.map((amigo) => (
-          <div key={amigo.id} className="amigo-card">
-            <div className="amigo-header">
-              <div className="avatar-status-wrapper">
-                <img src={amigo.avatar} alt={amigo.nombre} className="amigo-avatar" />
-                <span className={`status-dot ${amigo.online ? 'online' : 'offline'}`}></span>
+      {loading ? (
+        <p style={{ textAlign: 'center', color: '#aaa' }}>Cargando amigos...</p>
+      ) : (
+        <div className="amigos-grid">
+          {amigos.length > 0 ? amigos.map((amigo) => (
+            <div key={amigo.id} className="amigo-card">
+              <div className="amigo-header">
+                <div className="avatar-status-wrapper">
+                  <img
+                    src={`https://i.pravatar.cc/150?u=${amigo.id}`}
+                    alt={amigo.name}
+                    className="amigo-avatar"
+                  />
+                </div>
+                <div className="amigo-main-info">
+                  <h4>{amigo.name}</h4>
+                  <p>{amigo.email}</p>
+                </div>
               </div>
-              <div className="amigo-main-info">
-                <h4>{amigo.nombre}</h4>
-                <p>{amigo.librosLeidos} libros leídos[cite: 1]</p>
-              </div>
-            </div>
 
-            <div className="amigo-current-reading">
-              <div className="reading-label">
-                <BookOpen size={14} color="#ff6b35" />
-                <span>Leyendo ahora</span>
+              <div className="amigo-current-reading">
+                <div className="reading-label">
+                  <BookOpen size={14} color="#ff6b35" />
+                  <span>Amigo desde</span>
+                </div>
+                <p className="reading-book-title">
+                  {amigo.createdAt ? new Date(amigo.createdAt).toLocaleDateString() : 'Recientemente'}
+                </p>
               </div>
-              <p className="reading-book-title">{amigo.leyendo}</p>
-            </div>
 
-            <div className="amigo-actions">
-              <button className="action-btn chat">
-                <MessageCircle size={18} /> Chat
-              </button>
-              <button className="action-btn profile">Ver perfil</button>
+              <div className="amigo-actions">
+                <button className="action-btn profile">Ver perfil</button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          )) : (
+            <p style={{ textAlign: 'center', color: '#aaa' }}>Aún no tienes amigos. ¡Envía una solicitud!</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
