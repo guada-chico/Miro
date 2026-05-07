@@ -1,0 +1,161 @@
+.inicio-content {
+  animation: fadeIn 0.4s ease;
+  font-family: var(--sans)
+}
+
+.hero h1 { 
+  font-size: 2.5rem; 
+  font-weight: 500; 
+  margin-bottom: 25px; 
+}
+
+.search-capsule {
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 20px;
+  max-width: 800px;
+  gap: 15px;
+}
+
+.search-cat { 
+  padding: 0 20px; 
+  border-right: 1px solid #eee; 
+  font-weight: 600; 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+}
+
+.search-input { 
+  flex: 1; 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+}
+
+.search-input input { 
+  border: none; 
+  outline: none; 
+  width: 100%; 
+}
+
+.search-btn { 
+  background: #2d433d; 
+  color: white; 
+  border: none; 
+  padding: 12px 30px; 
+  border-radius: 12px; 
+  font-weight: 600; 
+  cursor: pointer; 
+}
+
+.books-section { 
+  margin-top: 50px; 
+}
+
+.section-head { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 20px; 
+}
+
+.orange-link { 
+  color: #ff6b35; 
+  font-weight: 700; 
+  cursor: pointer; 
+}
+
+.books-grid { 
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 25px; 
+}
+
+.book-card img { 
+  width: 100%; 
+  border-radius: 20px; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+}
+
+/* --- ESTILOS PARA "LIBRO LEYENDO" --- */
+.reading-now-section {
+  margin-top: 40px;
+}
+
+.reading-card {
+  display: flex;
+  background: white;
+  padding: 20px;
+  border-radius: 25px;
+  gap: 25px;
+  max-width: 600px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  align-items: center;
+}
+
+.reading-cover {
+  width: 110px;
+  height: 160px;
+  border-radius: 15px;
+  object-fit: cover;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.reading-info {
+  flex: 1;
+}
+
+.reading-info h4 {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  color: #1a1a1a;
+}
+
+.author {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.progress-container {
+  margin-bottom: 20px;
+}
+
+.progress-bar {
+  background: #eee;
+  height: 8px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  background: #ff6b35; /* Naranja Miro */
+  height: 100%;
+  border-radius: 10px;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.continue-btn {
+  background: #2d433d;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.continue-btn:hover {
+  background: #1e2d29;
+  transform: scale(1.02);
+}
