@@ -86,9 +86,49 @@ export default function Inicio() {
 
   return (
     <div className="inicio-content">
+{/* SECCIÓN: CONTINUAR LEYENDO */}
+      <section className="reading-now-section">
+        <h1>Inicio</h1>
+        <div className="section-head">
+          <h3>Continuar leyendo</h3>
+        </div>
+        {currentReading ? (
+          <div className="reading-card">
+            <div className="reading-cover-container">
+              <img
+                src={currentReading.book?.imageUrl || currentReading.book?.coverImageUrl || 'https://via.placeholder.com/120x180?text=Sin+portada'}
+                alt={currentReading.book?.title}
+                className="reading-cover"
+              />
+            </div>
+            <div className="reading-info">
+              <h4>{currentReading.book?.title}</h4>
+              <p className="author">{currentReading.book?.author}</p>
+              {currentReading.book?.totalPages > 0 && (
+                <div className="progress-container">
+                  <div className="progress-bar">
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${Math.round((currentReading.currentPage / currentReading.book.totalPages) * 100)}%` }}
+                    ></div>
+                  </div>
+                  <span className="progress-text">
+                    {Math.round((currentReading.currentPage / currentReading.book.totalPages) * 100)}% completado
+                  </span>
+                </div>
+              )}
+              <button className="continue-btn" onClick={() => navigate('/mis-libros')}>Continuar</button>
+            </div>
+          </div>
+        ) : (
+          <div className="reading-card">
+            <p style={{ color: '#aaa', padding: '1rem' }}>No tienes ninguna lectura activa. ¡Añade un libro a tu biblioteca!</p>
+          </div>
+        )}
+      </section>
+
       {/* SECCIÓN HERO Y BUSCADOR */}
       <section className="hero">
-        <h1>Inicio</h1>
         <form className="search-capsule" onSubmit={handleSearch}>
           <div className="search-cat">
             Todas las categorías <ChevronDown size={14} />
@@ -134,46 +174,6 @@ export default function Inicio() {
         )}
       </section>
 
-      {/* SECCIÓN: CONTINUAR LEYENDO */}
-      <section className="reading-now-section">
-        <div className="section-head">
-          <h3>Continuar leyendo</h3>
-        </div>
-        {currentReading ? (
-          <div className="reading-card">
-            <div className="reading-cover-container">
-              <img
-                src={currentReading.book?.imageUrl || currentReading.book?.coverImageUrl || 'https://via.placeholder.com/120x180?text=Sin+portada'}
-                alt={currentReading.book?.title}
-                className="reading-cover"
-              />
-            </div>
-            <div className="reading-info">
-              <h4>{currentReading.book?.title}</h4>
-              <p className="author">{currentReading.book?.author}</p>
-              {currentReading.book?.totalPages > 0 && (
-                <div className="progress-container">
-                  <div className="progress-bar">
-                    <div
-                      className="progress-fill"
-                      style={{ width: `${Math.round((currentReading.currentPage / currentReading.book.totalPages) * 100)}%` }}
-                    ></div>
-                  </div>
-                  <span className="progress-text">
-                    {Math.round((currentReading.currentPage / currentReading.book.totalPages) * 100)}% completado
-                  </span>
-                </div>
-              )}
-              <button className="continue-btn" onClick={() => navigate('/mis-libros')}>Continuar</button>
-            </div>
-          </div>
-        ) : (
-          <div className="reading-card">
-            <p style={{ color: '#aaa', padding: '1rem' }}>No tienes ninguna lectura activa. ¡Añade un libro a tu biblioteca!</p>
-          </div>
-        )}
-      </section>
-
       {/* SECCIÓN: LIBROS RECOMENDADOS */}
       <section className="books-section">
         <div className="section-head">
@@ -211,10 +211,7 @@ export default function Inicio() {
       {/* SECCIÓN: CLÁSICOS GRATUITOS (GUTENBERG) */}
       <section className="books-section">
         <div className="section-head">
-          <h3>
-            <BookOpen size={20} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
-            Clásicos para leer gratis
-          </h3>
+          <h3>Clásicos para leer gratis</h3>
           <span style={{ fontSize: '0.85rem', color: '#999' }}>
             Cortesía de Project Gutenberg
           </span>

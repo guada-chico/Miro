@@ -86,8 +86,3 @@
 .nav-item:hover:not(.active) { 
   background: #f5f5f5; 
 }
-
-.logout-btn { 
-  color: #ff4d4d !important; 
-  margin-top: 20px; 
-}

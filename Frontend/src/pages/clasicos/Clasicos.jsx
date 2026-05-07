@@ -45,10 +45,7 @@ export default function Clasicos() {
           <button className="back-btn" onClick={() => navigate('/inicio')}>
             <ArrowLeft size={20} />
           </button>
-          <h1>
-            <BookOpen size={24} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
-            Clásicos Gratuitos
-          </h1>
+          <h1>Clásicos Gratuitos</h1>
         </div>
         <p>Más de 70,000 libros clásicos para leer gratis — Cortesía de Project Gutenberg</p>
       </header>

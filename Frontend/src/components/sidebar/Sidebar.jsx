@@ -75,9 +75,6 @@ export default function Sidebar() {
             >
               <HelpCircle size="{18}"/> <span>Ayuda</span>
           </li>
-          <li className="nav-item logout-btn" onClick={() => navigate('/login')}>
-            <LogOut size={18}/> <span>Cerrar sesión</span>
-          </li>
         </ul>
       </nav>
     </aside>

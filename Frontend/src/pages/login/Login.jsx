@@ -70,9 +70,36 @@ export default function Login({ setToken }) {
         });
       }
     } catch (error) {
+      // Extraer el mensaje de error más descriptivo posible
+      let mensaje = 'Ha ocurrido un error inesperado.';
+
+      if (!error.response) {
+        // Sin respuesta = backend caído o certificado SSL no aceptado
+        mensaje = 'No se puede conectar con el servidor.\n\n' +
+          '1. Comprueba que el backend está corriendo.\n' +
+          '2. Abre https://localhost:7072/swagger en el navegador y acepta el certificado SSL.';
+      } else if (error.response.status === 400) {
+        // Errores de validación del backend (contraseña débil, usuario ya existe, etc.)
+        const data = error.response.data;
+        if (typeof data === 'string') {
+          mensaje = data;
+        } else if (data?.errors) {
+          // ModelState errors de ASP.NET
+          mensaje = Object.values(data.errors).flat().join('\n');
+        } else if (data?.message) {
+          mensaje = data.message;
+        } else {
+          mensaje = 'Datos inválidos. La contraseña debe tener mínimo 8 caracteres, una mayúscula y un carácter especial (!@#$%...).';
+        }
+      } else if (error.response.status === 401) {
+        mensaje = 'Email o contraseña incorrectos.';
+      } else {
+        mensaje = error.response?.data || error.message || mensaje;
+      }
+
       Swal.fire({
         title: 'Error',
-        text: error.response?.data?.message || error.message || 'Credenciales incorrectas',
+        text: mensaje,
         icon: 'error',
         confirmButtonText: 'Reintentar'
       });
@@ -122,6 +149,13 @@ export default function Login({ setToken }) {
               required
             />
           </div>
+
+          {/* Requisitos de contraseña visibles solo en registro */}
+          {isRegister && (
+            <p style={{ fontSize: '0.75rem', color: '#aaa', marginTop: '-0.5rem', marginBottom: '0.25rem', lineHeight: '1.4' }}>
+              Mínimo 8 caracteres, una mayúscula y un carácter especial (!@#$%&*.,)
+            </p>
+          )}
 
           {isRegister && (
             <div className="input-box">

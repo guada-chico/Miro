@@ -3,6 +3,10 @@
   font-family: var(--sans);
 }
 
+.amigos-container h1{
+  font-size: 2.5rem;
+}
+
 .amigos-top-bar {
   display: flex;
   justify-content: space-between;

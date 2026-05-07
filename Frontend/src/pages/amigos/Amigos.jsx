@@ -36,7 +36,7 @@ export default function Amigos() {
           <button className="back-btn" onClick={() => navigate('/inicio')}>
             <ArrowLeft size={20} />
           </button>
-          <h1>Mis Amigos</h1>
+          <h1>Mis amigos</h1>
         </div>
         <p>Conecta con otros lectores y descubre qué están leyendo</p>
       </header>
@@ -47,7 +47,7 @@ export default function Amigos() {
           <Search size={20} color="#bbb" />
           <input
             type="number"
-            placeholder="ID del usuario para agregar..."
+            placeholder="Nombre del usuario para agregar..."
             value={receiverId}
             onChange={(e) => setReceiverId(e.target.value)}
           />
