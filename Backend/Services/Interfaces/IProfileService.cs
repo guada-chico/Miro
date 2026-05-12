@@ -27,5 +27,6 @@ namespace Miro.Services.Interfaces
         Task<(bool Success, string Error)> UpdateProfileAsync(int userId, UpdateProfileRequest request);
         Task<(bool Success, string Error)> ChangePasswordAsync(int userId, ChangePasswordRequest request);
         Task<(bool Success, string Error)> UpdateAvatarAsync(int userId, string avatarBase64);
+        Task<(bool Success, string Error)> DeleteAvatarAsync(int userId);
     }
 }

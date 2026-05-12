@@ -52,6 +52,12 @@ namespace Miro.Services
             if (request.NewPassword.Length < 8)
                 return (false, "La nueva contraseña debe tener al menos 8 caracteres.");
 
+            if (!request.NewPassword.Any(char.IsUpper))
+                return (false, "La nueva contraseña debe contener al menos una letra mayúscula.");
+
+            if (!request.NewPassword.Any(c => "!@#$%&*.,".Contains(c)))
+                return (false, "La nueva contraseña debe contener al menos un carácter especial (!@#$%&*.,).");
+
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
             await _context.SaveChangesAsync();
             return (true, string.Empty);
@@ -70,6 +76,16 @@ namespace Miro.Services
                 return (false, "Formato de imagen no válido.");
 
             user.AvatarUrl = avatarBase64;
+            await _context.SaveChangesAsync();
+            return (true, string.Empty);
+        }
+
+        public async Task<(bool Success, string Error)> DeleteAvatarAsync(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return (false, "Usuario no encontrado.");
+
+            user.AvatarUrl = null;
             await _context.SaveChangesAsync();
             return (true, string.Empty);
         }

@@ -69,5 +69,15 @@ namespace Miro.Controllers
 
             return Ok(new { message = "Foto actualizada correctamente." });
         }
+
+        /// <summary>Elimina la foto de perfil (vuelve al avatar por defecto).</summary>
+        [HttpDelete("avatar")]
+        public async Task<IActionResult> DeleteAvatar()
+        {
+            var (success, error) = await _profileService.DeleteAvatarAsync(GetUserId());
+            if (!success) return BadRequest(error);
+
+            return Ok(new { message = "Foto eliminada correctamente." });
+        }
     }
 }

@@ -1,8 +1,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Mail, Lock, Camera, Save, LogOut, CheckCircle, AlertCircle } from 'lucide-react';
-import { getProfile, updateProfile, changePassword, updateAvatar } from '../../services/profile-service';
+import { ArrowLeft, User, Mail, Lock, Camera, Trash2, Save, LogOut, CheckCircle, AlertCircle } from 'lucide-react';
+import { getProfile, updateProfile, changePassword, updateAvatar, deleteAvatar } from '../../services/profile-service';
 import { logout } from '../../services/auth-service';
 import './Perfil.css';
 
@@ -22,7 +22,7 @@ export default function Perfil() {
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
   // Feedback
-  const [profileMsg, setProfileMsg] = useState(null);   // { type: 'ok'|'error', text }
+  const [profileMsg, setProfileMsg] = useState(null); 
   const [passwordMsg, setPasswordMsg] = useState(null);
   const [avatarMsg, setAvatarMsg] = useState(null);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -74,6 +74,14 @@ export default function Perfil() {
       setPasswordMsg({ type: 'error', text: 'La nueva contraseña debe tener al menos 8 caracteres.' });
       return;
     }
+    if (!/[A-Z]/.test(newPassword)) {
+      setPasswordMsg({ type: 'error', text: 'La nueva contraseña debe contener al menos una letra mayúscula.' });
+      return;
+    }
+    if (!/[!@#$%&*.,]/.test(newPassword)) {
+      setPasswordMsg({ type: 'error', text: 'La nueva contraseña debe contener al menos un carácter especial (!@#$%&*.,).' });
+      return;
+    }
     setSavingPassword(true);
     try {
       await changePassword(currentPassword, newPassword);
@@ -104,6 +112,19 @@ export default function Perfil() {
       setAvatarMsg({ type: 'ok', text: 'Foto actualizada.' });
     } catch {
       setAvatarMsg({ type: 'error', text: 'Error al subir la foto.' });
+    } finally {
+      setTimeout(() => setAvatarMsg(null), 3000);
+    }
+  };
+
+  // ── Borrar foto ───────────────────────────────────────────────────────
+  const handleDeleteAvatar = async () => {
+    try {
+      await deleteAvatar();
+      setAvatarUrl(null);
+      setAvatarMsg({ type: 'ok', text: 'Foto eliminada.' });
+    } catch {
+      setAvatarMsg({ type: 'error', text: 'Error al eliminar la foto.' });
     } finally {
       setTimeout(() => setAvatarMsg(null), 3000);
     }
@@ -154,6 +175,15 @@ export default function Perfil() {
             >
               <Camera size={18} />
             </button>
+            {avatarUrl && (
+              <button
+                className="delete-photo-btn"
+                onClick={handleDeleteAvatar}
+                title="Eliminar foto"
+              >
+                <Trash2 size={18} />
+              </button>
+            )}
             <input
               ref={fileInputRef}
               type="file"
@@ -249,6 +279,9 @@ export default function Perfil() {
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                 </div>
+                <p style={{ fontSize: '0.75rem', color: '#aaa', marginTop: '0.25rem', lineHeight: '1.4' }}>
+                  Mínimo 8 caracteres, una mayúscula y un carácter especial (!@#$%&*.,)
+                </p>
               </div>
               <div className="form-group">
                 <label>Confirmar nueva contraseña</label>

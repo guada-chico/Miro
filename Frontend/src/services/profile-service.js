@@ -39,3 +39,9 @@ export const updateAvatar = async (file) => {
     reader.readAsDataURL(file);
   });
 };
+
+/** Elimina la foto de perfil (vuelve al avatar por defecto). */
+export const deleteAvatar = async () => {
+  const response = await api.delete('/profile/avatar');
+  return response.data;
+};
