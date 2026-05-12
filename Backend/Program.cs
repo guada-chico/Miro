@@ -28,6 +28,7 @@ builder.Services.AddHttpClient<IGoogleBookService, GoogleBookService>();
 builder.Services.AddHttpClient<IOpenLibraryService, OpenLibraryService>();
 builder.Services.AddHttpClient<IGutendexService, GutendexService>();
 builder.Services.AddHttpClient<INytBooksService, NytBooksService>();
+builder.Services.AddHttpClient<IPrhBooksService, PrhBooksService>();
 
 // --- 3. CONFIGURACIÓN DE SEGURIDAD (JWT) ---
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "ClaveSuperSecretaDeMiroProyecto2024!";

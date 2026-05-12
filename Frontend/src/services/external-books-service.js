@@ -4,29 +4,56 @@
 //  GOOGLE BOOKS (todo en español)
 // ─────────────────────────────────────────────
 
-/**
- * Búsqueda libre de libros (filtra por español).
- */
 export const searchExternalBooks = async (query) => {
   const response = await api.get('/externalbooks/search', { params: { q: query } });
   return response.data;
 };
 
-/**
- * Libros actuales en español por género.
- * Géneros: novela, thriller, romance, 'ciencia ficcion', fantasia,
- *          historia, biografia, autoayuda, infantil
- */
 export const getSpanishRecommendations = async (genre = 'novela') => {
   const response = await api.get('/externalbooks/recommendations', { params: { genre } });
   return response.data;
 };
 
-/**
- * Clásicos de la literatura en español.
- */
 export const getSpanishClassics = async () => {
   const response = await api.get('/externalbooks/classics');
+  return response.data;
+};
+
+// ─────────────────────────────────────────────
+//  PENGUIN RANDOM HOUSE (cuando la key esté activa)
+// ─────────────────────────────────────────────
+
+/**
+ * Novedades recientes de PRH en español.
+ * Devuelve { activated: false } si la key aún no está aprobada.
+ */
+export const getPrhNewReleases = async (rows = 20) => {
+  const response = await api.get('/prhbooks/new-releases', { params: { rows } });
+  return response.data;
+};
+
+/**
+ * Próximas publicaciones de PRH en español.
+ */
+export const getPrhComingSoon = async (rows = 20) => {
+  const response = await api.get('/prhbooks/coming-soon', { params: { rows } });
+  return response.data;
+};
+
+/**
+ * Búsqueda en el catálogo de PRH.
+ */
+export const searchPrhBooks = async (query, rows = 20) => {
+  const response = await api.get('/prhbooks/search', { params: { q: query, rows } });
+  return response.data;
+};
+
+/**
+ * Comprueba si la key de PRH está activa.
+ * @returns {{ activated: boolean, message: string }}
+ */
+export const checkPrhStatus = async () => {
+  const response = await api.get('/prhbooks/status');
   return response.data;
 };
 
