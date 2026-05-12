@@ -1,68 +1,50 @@
 import { useState, useEffect } from 'react';
-import { Search, ChevronDown, BookOpen, ExternalLink } from 'lucide-react';
+import { Search, ChevronDown, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentReading } from '../../services/reading-service';
-import { getMyRecommendations } from '../../services/recommendations-service';
-import { searchExternalBooks, getTopClassics } from '../../services/external-books-service';
+import { searchExternalBooks, getSpanishRecommendations, getTopClassics } from '../../services/external-books-service';
 import './Inicio.css';
+
+const GENRES = [
+  { key: 'novela',          label: 'Novela' },
+  { key: 'thriller',        label: 'Thriller' },
+  { key: 'romance',         label: 'Romance' },
+  { key: 'fantasia',        label: 'Fantasía' },
+];
 
 export default function Inicio() {
   const navigate = useNavigate();
   const [currentReading, setCurrentReading] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [classics, setClassics] = useState([]);
+  const [activeGenre, setActiveGenre] = useState('novela');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchError, setSearchError] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [loadingReco, setLoadingReco] = useState(true);
 
+  // Lectura actual y clásicos al montar
   useEffect(() => {
     getCurrentReading()
       .then(setCurrentReading)
       .catch(() => setCurrentReading(null));
 
-    // Intentar recomendaciones del backend; si vienen vacías o falla,
-    // usar los clásicos populares de Gutenberg como fallback
-    getMyRecommendations()
-      .then((data) => {
-        if (data && data.length > 0) {
-          setRecommendations(data);
-        } else {
-          // Sin favoritos aún → mostrar populares de Gutenberg
-          return getTopClassics(8).then((classics) => {
-            // Normalizar al mismo formato que usa el template
-            const normalized = classics.map((b) => ({
-              id: b.id,
-              title: b.title,
-              imageUrl: b.coverUrl,
-              author: b.authors?.[0] ?? 'Autor desconocido',
-              readUrl: b.readUrl,
-            }));
-            setRecommendations(normalized);
-          });
-        }
-      })
-      .catch(() => {
-        // Si falla la autenticación, cargar Gutenberg directamente
-        getTopClassics(8)
-          .then((classics) => {
-            const normalized = classics.map((b) => ({
-              id: b.id,
-              title: b.title,
-              imageUrl: b.coverUrl,
-              author: b.authors?.[0] ?? 'Autor desconocido',
-              readUrl: b.readUrl,
-            }));
-            setRecommendations(normalized);
-          })
-          .catch(() => setRecommendations([]));
-      });
-
-    // Clásicos de la sección inferior (diferente selección)
     getTopClassics(8)
       .then(setClassics)
       .catch(() => setClassics([]));
   }, []);
+
+  // Recomendaciones en español cuando cambia el género
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingReco(true);
+    getSpanishRecommendations(activeGenre)
+      .then((data) => { if (!cancelled) setRecommendations(data ?? []); })
+      .catch(() => { if (!cancelled) setRecommendations([]); })
+      .finally(() => { if (!cancelled) setLoadingReco(false); });
+    return () => { cancelled = true; };
+  }, [activeGenre]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -72,16 +54,13 @@ export default function Inicio() {
     setSearchResults([]);
     try {
       const results = await searchExternalBooks(searchQuery);
-      if (results.length === 0) {
-        setSearchError('No se encontraron resultados. Prueba con otro término.');
-      }
+      if (results.length === 0) setSearchError('No se encontraron resultados. Prueba con otro término.');
       setSearchResults(results);
     } catch (err) {
       console.error('Error en búsqueda:', err);
       setSearchError('Error al buscar. Comprueba que el backend está activo.');
     } finally {
-      setIsSearching(false);
-    }
+      setIsSearching(false);    }
   };
 
   return (
@@ -174,10 +153,10 @@ export default function Inicio() {
         )}
       </section>
 
-      {/* SECCIÓN: LIBROS RECOMENDADOS */}
+      {/* SECCIÓN: LIBROS RECOMENDADOS EN ESPAÑOL */}
       <section className="books-section">
         <div className="section-head">
-          <h3>Libros recomendados</h3>
+          <h3>Recomendados en español</h3>
           <span
             className="orange-link"
             onClick={() => navigate('/recomendaciones')}
@@ -186,26 +165,47 @@ export default function Inicio() {
             Ver todos &gt;
           </span>
         </div>
-        <div className="books-grid">
-          {recommendations.slice(0, 4).map((book) => (
-            <div
-              key={book.id}
-              className="book-card"
-              style={{ cursor: book.readUrl ? 'pointer' : 'default' }}
-              onClick={() => book.readUrl && window.open(book.readUrl, '_blank')}
-              title={`${book.title}${book.author ? ` — ${book.author}` : ''}`}
+
+        {/* Tabs de géneros */}
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+          {GENRES.map((g) => (
+            <button
+              key={g.key}
+              onClick={() => setActiveGenre(g.key)}
+              style={{
+                padding: '0.35rem 0.9rem', borderRadius: '20px', border: 'none',
+                cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
+                background: activeGenre === g.key ? '#ff6b35' : '#f0f0f0',
+                color: activeGenre === g.key ? 'white' : '#666',
+                transition: 'all 0.2s',
+              }}
             >
-              {book.imageUrl
-                ? <img src={book.imageUrl} alt={book.title} />
-                : (
+              {g.label}
+            </button>
+          ))}
+        </div>
+
+        {loadingReco ? (
+          <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Cargando libros en español...</p>
+        ) : (
+          <div className="books-grid">
+            {recommendations.slice(0, 4).map((book, i) => (
+              <div
+                key={book.isbn || book.id || i}
+                className="book-card"
+                title={`${book.title}${book.author ? ` — ${book.author}` : ''}`}
+              >
+                {book.imageUrl ? (
+                  <img src={book.imageUrl} alt={book.title} />
+                ) : (
                   <div style={{ padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {book.title}
                   </div>
-                )
-              }
-            </div>
-          ))}
-        </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* SECCIÓN: CLÁSICOS GRATUITOS (GUTENBERG) */}

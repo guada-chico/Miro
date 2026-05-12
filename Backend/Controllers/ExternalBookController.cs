@@ -10,49 +10,53 @@ namespace Miro.Controllers
         private readonly IGoogleBookService _googleService;
         private readonly IOpenLibraryService _openLibraryService;
 
-        // Inyectamos ambos servicios
         public ExternalBooksController(IGoogleBookService googleService, IOpenLibraryService openLibraryService)
         {
             _googleService = googleService;
             _openLibraryService = openLibraryService;
         }
 
+        /// <summary>Búsqueda libre (siempre en español).</summary>
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string q)
         {
-            // 1. Validación básica
             if (string.IsNullOrWhiteSpace(q))
-                return BadRequest("La consulta de búsqueda no puede estar vacía.");
+                return BadRequest("La consulta no puede estar vacía.");
 
             try
             {
-                // 2. Buscamos en Google Books (trae títulos, autores, sinopsis e ISBN)
                 var results = await _googleService.SearchBooksAsync(q);
                 var booksList = results.ToList();
 
-                // 3. Refuerzo de portadas con Open Library
-                foreach (var book in booksList)
+                // Refuerzo de portadas con Open Library si falta imagen
+                foreach (var book in booksList.Where(b => string.IsNullOrEmpty(b.ImageUrl) && !string.IsNullOrEmpty(b.Isbn)))
                 {
-                    // Si Google no nos dio imagen, o si queremos intentar buscar una de mejor calidad
-                    // Usamos el ISBN que acabamos de implementar
-                    if (string.IsNullOrEmpty(book.ImageUrl) && !string.IsNullOrEmpty(book.Isbn))
-                    {
-                        var highResCover = await _openLibraryService.GetHighResCoverUrlAsync(book.Isbn);
-
-                        if (!string.IsNullOrEmpty(highResCover))
-                        {
-                            book.ImageUrl = highResCover;
-                        }
-                    }
+                    var cover = await _openLibraryService.GetHighResCoverUrlAsync(book.Isbn!);
+                    if (!string.IsNullOrEmpty(cover)) book.ImageUrl = cover;
                 }
 
                 return Ok(booksList);
             }
             catch (Exception ex)
             {
-                // Log del error (opcional) y respuesta 500
-                return StatusCode(500, $"Error al procesar la búsqueda externa: {ex.Message}");
+                return StatusCode(500, $"Error: {ex.Message}");
             }
+        }
+
+        /// <summary>Libros actuales en español por género.</summary>
+        [HttpGet("recommendations")]
+        public async Task<IActionResult> GetRecommendations([FromQuery] string genre = "novela")
+        {
+            var books = await _googleService.GetSpanishRecommendationsAsync(genre);
+            return Ok(books.ToList());
+        }
+
+        /// <summary>Clásicos de la literatura en español.</summary>
+        [HttpGet("classics")]
+        public async Task<IActionResult> GetClassics()
+        {
+            var books = await _googleService.GetSpanishClassicsAsync();
+            return Ok(books.ToList());
         }
     }
 }

@@ -27,9 +27,9 @@ builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 builder.Services.AddHttpClient<IGoogleBookService, GoogleBookService>();
 builder.Services.AddHttpClient<IOpenLibraryService, OpenLibraryService>();
 builder.Services.AddHttpClient<IGutendexService, GutendexService>();
+builder.Services.AddHttpClient<INytBooksService, NytBooksService>();
 
 // --- 3. CONFIGURACIÓN DE SEGURIDAD (JWT) ---
-// Asegúrate de tener "Jwt:Key" en tu appsettings.json
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "ClaveSuperSecretaDeMiroProyecto2024!";
 var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 

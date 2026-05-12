@@ -1,14 +1,11 @@
-import api from './api-config';
+﻿import api from './api-config';
 
 // ─────────────────────────────────────────────
-//  GOOGLE BOOKS + OPEN LIBRARY (via backend)
+//  GOOGLE BOOKS (todo en español)
 // ─────────────────────────────────────────────
 
 /**
- * Busca libros usando Google Books con portadas reforzadas por Open Library.
- * El backend combina ambas APIs automáticamente.
- * @param {string} query - Texto de búsqueda
- * @returns {Array} Lista de libros con título, autor, ISBN, sinopsis, portada
+ * Búsqueda libre de libros (filtra por español).
  */
 export const searchExternalBooks = async (query) => {
   const response = await api.get('/externalbooks/search', { params: { q: query } });
@@ -16,34 +13,41 @@ export const searchExternalBooks = async (query) => {
 };
 
 /**
- * Construye la URL de portada de Open Library a partir de un ISBN.
- * No necesita llamada al backend, es una URL directa.
- * @param {string} isbn
- * @param {'S'|'M'|'L'} size - S=pequeña, M=mediana, L=grande
+ * Libros actuales en español por género.
+ * Géneros: novela, thriller, romance, 'ciencia ficcion', fantasia,
+ *          historia, biografia, autoayuda, infantil
  */
+export const getSpanishRecommendations = async (genre = 'novela') => {
+  const response = await api.get('/externalbooks/recommendations', { params: { genre } });
+  return response.data;
+};
+
+/**
+ * Clásicos de la literatura en español.
+ */
+export const getSpanishClassics = async () => {
+  const response = await api.get('/externalbooks/classics');
+  return response.data;
+};
+
+// ─────────────────────────────────────────────
+//  OPEN LIBRARY — portadas directas por ISBN
+// ─────────────────────────────────────────────
+
 export const getOpenLibraryCover = (isbn, size = 'M') => {
   if (!isbn) return null;
   return `https://covers.openlibrary.org/b/isbn/${isbn}-${size}.jpg`;
 };
 
 // ─────────────────────────────────────────────
-//  GUTENDEX (Project Gutenberg - libros gratis)
+//  GUTENDEX (clásicos gratuitos para leer)
 // ─────────────────────────────────────────────
 
-/**
- * Busca libros gratuitos en Project Gutenberg.
- * @param {string} query
- * @returns {Array} Lista de libros con título, autores, portada y URL de lectura
- */
 export const searchGutendexBooks = async (query) => {
   const response = await api.get('/gutendex/search', { params: { q: query } });
   return response.data;
 };
 
-/**
- * Obtiene los libros clásicos más populares de Gutenberg.
- * @param {number} count - Número de libros a obtener (máx 20)
- */
 export const getTopClassics = async (count = 20) => {
   const response = await api.get('/gutendex/top', { params: { count } });
   return response.data;
