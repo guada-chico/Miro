@@ -70,14 +70,23 @@
 
 .books-grid { 
   display: grid; 
-  grid-template-columns: repeat(4, 1fr); 
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
   gap: 25px; 
+}
+
+.book-card {
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 2/3;
+  background: #f5f5f5;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 .book-card img { 
   width: 100%; 
+  height: 100%;
+  object-fit: cover;
   border-radius: 20px; 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
 }
 
 /* --- ESTILOS PARA "LIBRO LEYENDO" --- */

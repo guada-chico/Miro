@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, ChevronDown, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentReading } from '../../services/reading-service';
-import { searchExternalBooks, getSpanishRecommendations, getTopClassics } from '../../services/external-books-service';
+import { searchExternalBooks, getOpenLibraryRecommendations, getSpanishClassicsGutenberg } from '../../services/external-books-service';
 import './Inicio.css';
 
 const GENRES = [
@@ -30,7 +30,7 @@ export default function Inicio() {
       .then(setCurrentReading)
       .catch(() => setCurrentReading(null));
 
-    getTopClassics(8)
+    getSpanishClassicsGutenberg(8)
       .then(setClassics)
       .catch(() => setClassics([]));
   }, []);
@@ -39,7 +39,7 @@ export default function Inicio() {
   useEffect(() => {
     let cancelled = false;
     setLoadingReco(true);
-    getSpanishRecommendations(activeGenre)
+    getOpenLibraryRecommendations(activeGenre)
       .then((data) => { if (!cancelled) setRecommendations(data ?? []); })
       .catch(() => { if (!cancelled) setRecommendations([]); })
       .finally(() => { if (!cancelled) setLoadingReco(false); });
@@ -195,8 +195,8 @@ export default function Inicio() {
                 className="book-card"
                 title={`${book.title}${book.author ? ` — ${book.author}` : ''}`}
               >
-                {book.imageUrl ? (
-                  <img src={book.imageUrl} alt={book.title} />
+                {(book.coverUrl || book.imageUrl) ? (
+                  <img src={book.coverUrl || book.imageUrl} alt={book.title} />
                 ) : (
                   <div style={{ padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {book.title}

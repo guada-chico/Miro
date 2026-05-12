@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, BookOpen, ExternalLink } from 'lucide-react';
-import { getSpanishClassics, searchExternalBooks } from '../../services/external-books-service';
+import { getSpanishClassicsGutenberg, searchSpanishClassics } from '../../services/external-books-service';
 import './Clasicos.css';
 
 export default function Clasicos() {
@@ -12,7 +12,7 @@ export default function Clasicos() {
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    getSpanishClassics()
+    getSpanishClassicsGutenberg(32)
       .then(setBooks)
       .catch(() => setBooks([]))
       .finally(() => setLoading(false));
@@ -23,7 +23,7 @@ export default function Clasicos() {
     if (!searchQuery.trim()) return;
     setIsSearching(true);
     try {
-      const results = await searchExternalBooks(searchQuery);
+      const results = await searchSpanishClassics(searchQuery);
       setBooks(results);
     } catch {
       setBooks([]);
@@ -41,15 +41,14 @@ export default function Clasicos() {
           </button>
           <h1>Clásicos en Español</h1>
         </div>
-        <p>Literatura clásica española — powered by Google Books</p>
+        <p>Literatura clásica en español — gratis en Project Gutenberg</p>
       </header>
 
-      {/* Buscador */}
       <form className="search-bar-clasicos" onSubmit={handleSearch}>
         <Search size={20} color="#bbb" />
         <input
           type="text"
-          placeholder="Buscar por título, autor (ej: Cervantes, García Lorca, Galdós)..."
+          placeholder="Buscar por título o autor (ej: Cervantes, Galdós, Lorca)..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -59,32 +58,41 @@ export default function Clasicos() {
       </form>
 
       {loading ? (
-        <p style={{ textAlign: 'center', color: '#aaa', marginTop: '2rem' }}>
-          Cargando clásicos...
-        </p>
+        <p style={{ textAlign: 'center', color: '#aaa', marginTop: '2rem' }}>Cargando clásicos...</p>
       ) : (
         <div className="clasicos-grid">
-          {books.map((book, i) => (
-            <div key={book.isbn || book.id || i} className="clasico-card">
+          {books.map((book) => (
+            <div key={book.id} className="clasico-card">
               <div className="clasico-cover">
-                {book.imageUrl ? (
-                  <img src={book.imageUrl} alt={book.title} />
+                {book.coverUrl ? (
+                  <img src={book.coverUrl} alt={book.title} />
                 ) : (
                   <div className="no-cover">
                     <BookOpen size={32} color="#ccc" />
                   </div>
                 )}
               </div>
-              
               <div className="clasico-info">
                 <h4>{book.title}</h4>
-                <p className="clasico-author">{book.author}</p>
-                {book.category && (
-                  <div className="clasico-meta">
-                    <span className="clasico-lang">
-                      {book.category}
+                <p className="clasico-author">
+                  {book.authors?.length > 0 ? book.authors.join(', ') : 'Autor desconocido'}
+                </p>
+                <div className="clasico-meta">
+                  <span className="clasico-lang">🇪🇸 Español</span>
+                  {book.downloadCount > 0 && (
+                    <span className="clasico-downloads">
+                      ↓ {book.downloadCount.toLocaleString()}
                     </span>
-                  </div>
+                  )}
+                </div>
+                {book.readUrl && (
+                  <button
+                    className="read-now-btn"
+                    onClick={() => window.open(book.readUrl, '_blank')}
+                  >
+                    <ExternalLink size={16} />
+                    Leer ahora
+                  </button>
                 )}
               </div>
             </div>
@@ -95,9 +103,7 @@ export default function Clasicos() {
       {!loading && books.length === 0 && (
         <div style={{ textAlign: 'center', color: '#aaa', marginTop: '3rem' }}>
           <BookOpen size={48} color="#ddd" />
-          <p style={{ marginTop: '1rem' }}>
-            No se encontraron resultados. Intenta con otro término de búsqueda.
-          </p>
+          <p style={{ marginTop: '1rem' }}>No se encontraron resultados.</p>
         </div>
       )}
     </div>

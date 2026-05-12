@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Heart, BookmarkPlus, ArrowLeft, X } from 'lucide-react';
-import { getSpanishRecommendations } from '../../services/external-books-service';
+import { Heart, BookmarkPlus, ArrowLeft, X } from 'lucide-react';
+import { getOpenLibraryRecommendations } from '../../services/external-books-service';
 import { toggleFavorite } from '../../services/favorites-service';
 import { updateReadingStatus } from '../../services/reading-service';
 import './Recomendaciones.css';
@@ -28,7 +28,7 @@ export default function Recomendaciones() {
   useEffect(() => {
     setLoading(true);
     setBooks([]);
-    getSpanishRecommendations(activeGenre)
+    getOpenLibraryRecommendations(activeGenre)
       .then((data) => setBooks(data ?? []))
       .catch(() => setBooks([]))
       .finally(() => setLoading(false));
@@ -55,7 +55,7 @@ export default function Recomendaciones() {
           </button>
           <h1>Recomendaciones</h1>
         </div>
-        <p>Libros actuales en español — powered by Google Books</p>
+        <p>Libros actuales en español — Open Library</p>
       </header>
 
       {/* Filtro de géneros */}
@@ -87,7 +87,7 @@ export default function Recomendaciones() {
             <div key={book.isbn || book.id || i} className="reco-card" onClick={() => setSelectedBook(book)}>
               <div className="reco-img-wrapper">
                 <img
-                  src={book.imageUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'}
+                  src={book.coverUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'}
                   alt={book.title}
                 />
                 <div className="reco-hover-actions">
@@ -117,21 +117,28 @@ export default function Recomendaciones() {
             </button>
             <div className="modal-body">
               <img
-                src={selectedBook.imageUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'}
+                src={selectedBook.coverUrlLarge || selectedBook.coverUrl || 'https://via.placeholder.com/150x220?text=Sin+portada'}
                 alt={selectedBook.title}
                 className="modal-img"
               />
               <div className="modal-details">
                 <h2>{selectedBook.title}</h2>
                 <p className="modal-author">de {selectedBook.author}</p>
-                {selectedBook.category && (
+                {selectedBook.publisher && (
+                  <p style={{ fontSize: '0.8rem', color: '#aaa', marginBottom: '0.25rem' }}>
+                    {selectedBook.publisher}{selectedBook.firstPublishYear ? ` · ${selectedBook.firstPublishYear}` : ''}
+                  </p>
+                )}
+                {selectedBook.subject && (
                   <p style={{ fontSize: '0.8rem', color: '#ff6b35', marginBottom: '0.5rem' }}>
-                    {selectedBook.category}
+                    {selectedBook.subject}
                   </p>
                 )}
                 <div className="modal-section">
                   <h3 className="modal-label">Sinopsis</h3>
-                  <p className="modal-text">{selectedBook.synopsis || selectedBook.description || 'Sinopsis no disponible.'}</p>
+                  <p className="modal-text">
+                    {selectedBook.description || 'Sinopsis no disponible para este libro.'}
+                  </p>
                 </div>
                 <button className="add-to-library-btn" onClick={() => handleAddToLibrary(selectedBook.id)}>
                   Añadir a mi biblioteca

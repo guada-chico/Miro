@@ -21,10 +21,23 @@ namespace Miro.Services
 
         public async Task<IEnumerable<GutendexBook>> GetTopBooksAsync(int count = 20)
         {
-            // Gutendex ordena por popularidad (descargas) por defecto
             var url = $"{BaseUrl}?page=1";
             var books = await FetchBooks(url);
             return books.Take(count);
+        }
+
+        public async Task<IEnumerable<GutendexBook>> GetSpanishBooksAsync(int count = 32)
+        {
+            // languages=es filtra solo libros en español, ordenados por popularidad por defecto
+            var url = $"{BaseUrl}/?languages=es";
+            var books = await FetchBooks(url);
+            return books.Take(count);
+        }
+
+        public async Task<IEnumerable<GutendexBook>> SearchSpanishBooksAsync(string query)
+        {
+            var url = $"{BaseUrl}/?languages=es&search={Uri.EscapeDataString(query)}";
+            return await FetchBooks(url);
         }
 
         private async Task<IEnumerable<GutendexBook>> FetchBooks(string url)

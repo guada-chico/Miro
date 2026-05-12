@@ -1,15 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Importa el hook de navegación
+import { useNavigate } from 'react-router-dom';
 import { Bell, ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import { getUserName, logout } from '../../services/auth-service';
 import './Navbar.css';
 
 export default function Navbar() {
-  const navigate = useNavigate(); // 2. Inicializa la función de navegación
+  const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [userName, setUserName] = useState('Usuario');
 
   const userMenuRef = useRef(null);
   const notiMenuRef = useRef(null);
+
+  useEffect(() => {
+    // Leer el nombre del token JWT al montar el componente
+    const name = getUserName();
+    if (name) setUserName(name);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -22,10 +30,13 @@ export default function Navbar() {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showUserMenu, showNotifications]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const notifications = []; 
 
@@ -70,7 +81,7 @@ export default function Navbar() {
           <div className="user-avatar-container">
             <User size={20} className="user-icon-default" />
           </div>
-          <span className="user-name">Davis Workman</span>
+          <span className="user-name">{userName}</span>
           <ChevronDown size={14} className={showUserMenu ? 'rotate' : ''} />
 
           {showUserMenu && (
@@ -92,7 +103,7 @@ export default function Navbar() {
 
               <hr className="divider" />
               
-              <div className="dropdown-opt logout-opt" onClick={() => navigate('/login')}>
+              <div className="dropdown-opt logout-opt" onClick={handleLogout}>
                 <LogOut size={14}/> Cerrar sesión
               </div>
             </div>

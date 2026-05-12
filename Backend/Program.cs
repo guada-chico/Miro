@@ -22,10 +22,12 @@ builder.Services.AddScoped<IFriendshipService, FriendshipService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IReadingService, ReadingService>();
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 // Registro especial para APIS externas que usan HttpClient
 builder.Services.AddHttpClient<IGoogleBookService, GoogleBookService>();
 builder.Services.AddHttpClient<IOpenLibraryService, OpenLibraryService>();
+builder.Services.AddHttpClient<IOpenLibrarySearchService, OpenLibrarySearchService>();
 builder.Services.AddHttpClient<IGutendexService, GutendexService>();
 builder.Services.AddHttpClient<INytBooksService, NytBooksService>();
 builder.Services.AddHttpClient<IPrhBooksService, PrhBooksService>();
