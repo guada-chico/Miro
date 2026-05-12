@@ -6,6 +6,33 @@
   --text-light: #666666;
   --shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
   --sans: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  /* Tema claro (por defecto) */
+  --color-bg-app: #f3f0e7;
+  --color-bg-card: #ffffff;
+  --color-bg-input: #f9f9f9;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #888888;
+  --color-text-label: #bbbbbb;
+  --color-border: #eeeeee;
+  --color-border-section: #f5f5f5;
+  --color-navbar-bg: #ffffff;
+  --color-sidebar-bg: #ffffff;
+  --color-section-bg: #ffffff;
+}
+
+[data-theme="dark"] {
+  --color-bg-app: #1a1a2e;
+  --color-bg-card: #16213e;
+  --color-bg-input: #0f3460;
+  --color-text-primary: #e0e0e0;
+  --color-text-secondary: #a0a0a0;
+  --color-text-label: #707070;
+  --color-border: #2a2a4a;
+  --color-border-section: #2a2a4a;
+  --color-navbar-bg: #16213e;
+  --color-sidebar-bg: #16213e;
+  --color-section-bg: #16213e;
 }
 
 * {

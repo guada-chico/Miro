@@ -12,10 +12,10 @@
 }
 
 .ajustes-section {
-  background: white;
+  background: var(--color-section-bg);
   padding: 30px;
   border-radius: 30px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.04);
 }
 
 .section-header {
@@ -23,8 +23,8 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 25px;
-  color: #1a1a1a;
-  border-bottom: 1px solid #f5f5f5;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-section);
   padding-bottom: 15px;
 }
 
@@ -32,6 +32,7 @@
   font-size: 2.5rem;
   font-weight: 500;
   margin: 0;
+  color: var(--color-text-primary);
 }
 
 .section-header h3 {
@@ -47,7 +48,7 @@
 }
 
 .ajuste-item:not(:last-child) {
-  border-bottom: 1px solid #fafafa;
+  border-bottom: 1px solid var(--color-border-section);
 }
 
 .ajuste-info {
@@ -59,12 +60,12 @@
 .ajuste-icon-bg {
   width: 45px;
   height: 45px;
-  background: #f9f9f9;
+  background: var(--color-bg-input);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #888;
+  color: var(--color-text-secondary);
 }
 
 .ajuste-icon-bg.danger {
@@ -75,13 +76,13 @@
 .ajuste-info strong {
   display: block;
   font-size: 1rem;
-  color: #333;
+  color: var(--color-text-primary);
   margin-bottom: 3px;
 }
 
 .ajuste-info p {
   font-size: 0.85rem;
-  color: #999;
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
@@ -91,6 +92,7 @@
   display: inline-block;
   width: 46px;
   height: 24px;
+  flex-shrink: 0;
 }
 
 .switch input {
@@ -103,7 +105,7 @@
   position: absolute;
   cursor: pointer;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #eee;
+  background-color: var(--color-border);
   transition: .4s;
   border-radius: 34px;
 }
@@ -122,7 +124,7 @@
 }
 
 input:checked + .slider {
-  background-color: #ff6b35; /* Tu naranja */
+  background-color: #ff6b35;
 }
 
 input:checked + .slider:before {
@@ -133,8 +135,9 @@ input:checked + .slider:before {
 .ajuste-select {
   padding: 8px 15px;
   border-radius: 10px;
-  border: 1px solid #eee;
-  background: #f9f9f9;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-input);
+  color: var(--color-text-primary);
   font-family: inherit;
   cursor: pointer;
   outline: none;
@@ -149,6 +152,7 @@ input:checked + .slider:before {
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s;
+  white-space: nowrap;
 }
 
 .btn-danger-outline:hover {

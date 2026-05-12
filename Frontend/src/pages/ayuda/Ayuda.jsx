@@ -1,26 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, HelpCircle, MessageSquare, Mail, ChevronDown, ChevronUp } from 'lucide-react';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Ayuda.css';
 
 export default function Ayuda() {
   const navigate = useNavigate();
-  const [activeIndex, setActiveIndex] = useState(null);
+  const { settings } = useSettings();
+  const t = getT(settings.language).help;
 
-  const faqs = [
-    {
-      pregunta: "¿Cómo añado un libro a mi biblioteca?",
-      respuesta: "Puedes añadir libros desde la sección de 'Recomendaciones' haciendo clic en la tarjeta del libro y seleccionando 'Añadir a mi biblioteca', o usando el botón '+' en tu sección de Mis Libros."
-    },
-    {
-      pregunta: "¿Puedo cambiar mi objetivo de lectura anual?",
-      respuesta: "¡Sí! Ve a la sección de Ajustes o haz clic directamente en tu tarjeta de Desafío en 'Mis Libros' para editar tu meta de libros anuales."
-    },
-    {
-      pregunta: "¿Cómo funcionan las recomendaciones?",
-      respuesta: "Nuestro sistema analiza tus libros leídos y tus autores favoritos para sugerirte nuevas historias que se adapten a tus gustos literarios."
-    }
-  ];
+  const [activeIndex, setActiveIndex] = useState(null);
 
   const toggleFAQ = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -33,37 +23,35 @@ export default function Ayuda() {
           <button className="back-btn" onClick={() => navigate('/inicio')}>
             <ArrowLeft size={20} />
           </button>
-          <h1>Centro de Ayuda</h1>
+          <h1>{t.title}</h1>
         </div>
-        <p>¿Tienes alguna duda? Estamos aquí para ayudarte</p>
+        <p>{t.subtitle}</p>
       </header>
 
-      {/* BUSCADOR DE AYUDA */}
       <div className="ayuda-search-section">
         <div className="search-bar-ayuda">
           <Search size={20} color="#bbb" />
-          <input type="text" placeholder="Busca una pregunta o tema..." />
+          <input type="text" placeholder={t.searchPlaceholder} />
         </div>
       </div>
 
       <div className="ayuda-grid">
-        {/* SECCIÓN DE PREGUNTAS FRECUENTES */}
         <section className="faq-section">
-          <h3><HelpCircle size={22} color="#ff6b35" /> Preguntas Frecuentes</h3>
+          <h3><HelpCircle size={22} color="#ff6b35" /> {t.faqTitle}</h3>
           <div className="faq-list">
-            {faqs.map((faq, index) => (
-              <div 
-                key={index} 
+            {t.faqs.map((faq, index) => (
+              <div
+                key={index}
                 className={`faq-item ${activeIndex === index ? 'active' : ''}`}
                 onClick={() => toggleFAQ(index)}
               >
                 <div className="faq-question">
-                  <span>{faq.pregunta}</span>
+                  <span>{faq.q}</span>
                   {activeIndex === index ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </div>
                 {activeIndex === index && (
                   <div className="faq-answer">
-                    <p>{faq.respuesta}</p>
+                    <p>{faq.a}</p>
                   </div>
                 )}
               </div>
@@ -71,20 +59,19 @@ export default function Ayuda() {
           </div>
         </section>
 
-        {/* CANALES DE CONTACTO */}
         <aside className="contact-sidebar">
           <div className="contact-card">
             <MessageSquare size={30} color="#ff6b35" />
-            <h4>Chat en vivo</h4>
-            <p>Habla con nuestro equipo de soporte ahora mismo.</p>
-            <button className="contact-btn">Iniciar Chat</button>
+            <h4>{t.liveChat}</h4>
+            <p>{t.liveChatDesc}</p>
+            <button className="contact-btn">{t.startChat}</button>
           </div>
 
           <div className="contact-card">
             <Mail size={30} color="#ff6b35" />
-            <h4>Soporte por Email</h4>
-            <p>Envíanos tus dudas y responderemos en menos de 24h.</p>
-            <button className="contact-btn secondary">Enviar Correo</button>
+            <h4>{t.emailSupport}</h4>
+            <p>{t.emailSupportDesc}</p>
+            <button className="contact-btn secondary">{t.sendEmail}</button>
           </div>
         </aside>
       </div>

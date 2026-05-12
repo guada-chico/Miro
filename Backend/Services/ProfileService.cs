@@ -89,5 +89,32 @@ namespace Miro.Services
             await _context.SaveChangesAsync();
             return (true, string.Empty);
         }
+
+        public async Task<(bool Success, string Error)> DeleteAccountAsync(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return (false, "Usuario no encontrado.");
+
+            // Eliminar datos relacionados manualmente (Friendships tiene Restrict, no cascada)
+            var friendships = _context.Friendships
+                .Where(f => f.UserRequestId == userId || f.UserReceiveId == userId);
+            _context.Friendships.RemoveRange(friendships);
+
+            var notifications = _context.Notifications
+                .Where(n => n.UserId == userId);
+            _context.Notifications.RemoveRange(notifications);
+
+            var favorites = _context.Favorites
+                .Where(f => f.UserId == userId);
+            _context.Favorites.RemoveRange(favorites);
+
+            var readingStatuses = _context.ReadingStatuses
+                .Where(r => r.UserId == userId);
+            _context.ReadingStatuses.RemoveRange(readingStatuses);
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return (true, string.Empty);
+        }
     }
 }

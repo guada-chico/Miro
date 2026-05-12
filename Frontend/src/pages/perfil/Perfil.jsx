@@ -4,11 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Mail, Lock, Camera, Trash2, Save, LogOut, CheckCircle, AlertCircle } from 'lucide-react';
 import { getProfile, updateProfile, changePassword, updateAvatar, deleteAvatar } from '../../services/profile-service';
 import { logout } from '../../services/auth-service';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Perfil.css';
 
 export default function Perfil() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const { settings } = useSettings();
+  const t = getT(settings.language).profile;
 
   // Datos del perfil
   const [nombre, setNombre] = useState('');
@@ -44,15 +48,16 @@ export default function Perfil() {
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     if (!nombre.trim() || !correo.trim()) {
-      setProfileMsg({ type: 'error', text: 'El nombre y el correo son obligatorios.' });
+      setProfileMsg({ type: 'error', text: t.nameEmailRequired });
       return;
     }
     setSavingProfile(true);
     try {
       await updateProfile(nombre.trim(), correo.trim());
-      setProfileMsg({ type: 'ok', text: 'Perfil actualizado correctamente.' });
+      setProfileMsg({ type: 'ok', text: t.profileUpdated });
+      window.dispatchEvent(new CustomEvent('profileUpdated', { detail: { name: nombre.trim() } }));
     } catch (err) {
-      setProfileMsg({ type: 'error', text: err.response?.data || 'Error al guardar los cambios.' });
+      setProfileMsg({ type: 'error', text: err.response?.data || t.profileError });
     } finally {
       setSavingProfile(false);
       setTimeout(() => setProfileMsg(null), 4000);
@@ -63,34 +68,34 @@ export default function Perfil() {
   const handleChangePassword = async (e) => {
     e.preventDefault();
     if (!currentPassword || !newPassword || !confirmNewPassword) {
-      setPasswordMsg({ type: 'error', text: 'Rellena todos los campos.' });
+      setPasswordMsg({ type: 'error', text: t.fillAllFields });
       return;
     }
     if (newPassword !== confirmNewPassword) {
-      setPasswordMsg({ type: 'error', text: 'Las contraseñas nuevas no coinciden.' });
+      setPasswordMsg({ type: 'error', text: t.passwordsMismatch });
       return;
     }
     if (newPassword.length < 8) {
-      setPasswordMsg({ type: 'error', text: 'La nueva contraseña debe tener al menos 8 caracteres.' });
+      setPasswordMsg({ type: 'error', text: t.passwordTooShort });
       return;
     }
     if (!/[A-Z]/.test(newPassword)) {
-      setPasswordMsg({ type: 'error', text: 'La nueva contraseña debe contener al menos una letra mayúscula.' });
+      setPasswordMsg({ type: 'error', text: t.passwordNoUpper });
       return;
     }
     if (!/[!@#$%&*.,]/.test(newPassword)) {
-      setPasswordMsg({ type: 'error', text: 'La nueva contraseña debe contener al menos un carácter especial (!@#$%&*.,).' });
+      setPasswordMsg({ type: 'error', text: t.passwordNoSpecial });
       return;
     }
     setSavingPassword(true);
     try {
       await changePassword(currentPassword, newPassword);
-      setPasswordMsg({ type: 'ok', text: 'Contraseña actualizada correctamente.' });
+      setPasswordMsg({ type: 'ok', text: t.passwordUpdated });
       setCurrentPassword('');
       setNewPassword('');
       setConfirmNewPassword('');
     } catch (err) {
-      setPasswordMsg({ type: 'error', text: err.response?.data || 'Error al cambiar la contraseña.' });
+      setPasswordMsg({ type: 'error', text: err.response?.data || t.passwordUpdated });
     } finally {
       setSavingPassword(false);
       setTimeout(() => setPasswordMsg(null), 4000);
@@ -101,17 +106,14 @@ export default function Perfil() {
   const handleAvatarChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // Previsualización inmediata
     const reader = new FileReader();
     reader.onload = () => setAvatarUrl(reader.result);
     reader.readAsDataURL(file);
-
     try {
       await updateAvatar(file);
-      setAvatarMsg({ type: 'ok', text: 'Foto actualizada.' });
+      setAvatarMsg({ type: 'ok', text: t.photoUpdated });
     } catch {
-      setAvatarMsg({ type: 'error', text: 'Error al subir la foto.' });
+      setAvatarMsg({ type: 'error', text: t.photoError });
     } finally {
       setTimeout(() => setAvatarMsg(null), 3000);
     }
@@ -122,9 +124,9 @@ export default function Perfil() {
     try {
       await deleteAvatar();
       setAvatarUrl(null);
-      setAvatarMsg({ type: 'ok', text: 'Foto eliminada.' });
+      setAvatarMsg({ type: 'ok', text: t.photoDeleted });
     } catch {
-      setAvatarMsg({ type: 'error', text: 'Error al eliminar la foto.' });
+      setAvatarMsg({ type: 'error', text: t.photoDeleteError });
     } finally {
       setTimeout(() => setAvatarMsg(null), 3000);
     }
@@ -141,7 +143,7 @@ export default function Perfil() {
   if (loading) {
     return (
       <div className="perfil-container">
-        <p style={{ color: '#aaa', padding: '2rem' }}>Cargando perfil...</p>
+        <p style={{ color: '#aaa', padding: '2rem' }}>{t.loading}</p>
       </div>
     );
   }
@@ -153,44 +155,24 @@ export default function Perfil() {
           <button className="back-btn" onClick={() => navigate('/inicio')}>
             <ArrowLeft size={20} />
           </button>
-          <h1>Mi Perfil</h1>
+          <h1>{t.title}</h1>
         </div>
-        <p>Gestiona tu información personal y ajustes de cuenta</p>
+        <p>{t.subtitle}</p>
       </header>
 
       <div className="perfil-content">
-        {/* SIDEBAR: FOTO Y RESUMEN */}
         <aside className="perfil-sidebar-info">
           <div className="avatar-wrapper">
-            <img
-              src={avatarUrl || defaultAvatar}
-              alt="Avatar"
-              className="perfil-avatar"
-              onError={(e) => { e.target.src = defaultAvatar; }}
-            />
-            <button
-              className="change-photo-btn"
-              onClick={() => fileInputRef.current?.click()}
-              title="Cambiar foto"
-            >
+            <img src={avatarUrl || defaultAvatar} alt="Avatar" className="perfil-avatar" onError={(e) => { e.target.src = defaultAvatar; }} />
+            <button className="change-photo-btn" onClick={() => fileInputRef.current?.click()} title="Cambiar foto">
               <Camera size={18} />
             </button>
             {avatarUrl && (
-              <button
-                className="delete-photo-btn"
-                onClick={handleDeleteAvatar}
-                title="Eliminar foto"
-              >
+              <button className="delete-photo-btn" onClick={handleDeleteAvatar} title="Eliminar foto">
                 <Trash2 size={18} />
               </button>
             )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={handleAvatarChange}
-            />
+            <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
           </div>
 
           {avatarMsg && (
@@ -203,39 +185,27 @@ export default function Perfil() {
           <p>{correo}</p>
 
           <button className="logout-perfil-btn" onClick={handleLogout}>
-            <LogOut size={18} /> Cerrar sesión
+            <LogOut size={18} /> {t.logout}
           </button>
         </aside>
 
-        {/* FORMULARIOS */}
         <div className="perfil-forms">
-
           {/* INFORMACIÓN PERSONAL */}
           <section className="perfil-card">
-            <h3><User size={20} /> Información Personal</h3>
+            <h3><User size={20} /> {t.personalInfo}</h3>
             <form onSubmit={handleSaveProfile}>
               <div className="form-group">
-                <label>Nombre</label>
+                <label>{t.name}</label>
                 <div className="input-with-icon">
                   <User size={18} className="input-icon" />
-                  <input
-                    type="text"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                    placeholder="Tu nombre"
-                  />
+                  <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder={t.namePlaceholder} />
                 </div>
               </div>
               <div className="form-group">
-                <label>Correo electrónico</label>
+                <label>{t.email}</label>
                 <div className="input-with-icon">
                   <Mail size={18} className="input-icon" />
-                  <input
-                    type="email"
-                    value={correo}
-                    onChange={(e) => setCorreo(e.target.value)}
-                    placeholder="tu@correo.com"
-                  />
+                  <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} placeholder={t.emailPlaceholder} />
                 </div>
               </div>
 
@@ -247,52 +217,37 @@ export default function Perfil() {
               )}
 
               <button type="submit" className="save-btn" disabled={savingProfile}>
-                <Save size={18} /> {savingProfile ? 'Guardando...' : 'Guardar cambios'}
+                <Save size={18} /> {savingProfile ? t.saving : t.saveChanges}
               </button>
             </form>
           </section>
 
           {/* SEGURIDAD */}
           <section className="perfil-card">
-            <h3><Lock size={20} /> Seguridad</h3>
+            <h3><Lock size={20} /> {t.security}</h3>
             <form onSubmit={handleChangePassword}>
               <div className="form-group">
-                <label>Contraseña actual</label>
+                <label>{t.currentPassword}</label>
                 <div className="input-with-icon">
                   <Lock size={18} className="input-icon" />
-                  <input
-                    type="password"
-                    placeholder="••••••••"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                  />
+                  <input type="password" placeholder="••••••••" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
                 </div>
               </div>
               <div className="form-group">
-                <label>Nueva contraseña</label>
+                <label>{t.newPassword}</label>
                 <div className="input-with-icon">
                   <Lock size={18} className="input-icon" />
-                  <input
-                    type="password"
-                    placeholder="Mínimo 8 caracteres"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                  />
+                  <input type="password" placeholder={t.newPassword} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                 </div>
                 <p style={{ fontSize: '0.75rem', color: '#aaa', marginTop: '0.25rem', lineHeight: '1.4' }}>
-                  Mínimo 8 caracteres, una mayúscula y un carácter especial (!@#$%&*.,)
+                  {t.newPasswordHint}
                 </p>
               </div>
               <div className="form-group">
-                <label>Confirmar nueva contraseña</label>
+                <label>{t.confirmPassword}</label>
                 <div className="input-with-icon">
                   <Lock size={18} className="input-icon" />
-                  <input
-                    type="password"
-                    placeholder="Repite la nueva contraseña"
-                    value={confirmNewPassword}
-                    onChange={(e) => setConfirmNewPassword(e.target.value)}
-                  />
+                  <input type="password" placeholder={t.confirmPassword} value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
                 </div>
               </div>
 
@@ -304,11 +259,10 @@ export default function Perfil() {
               )}
 
               <button type="submit" className="save-btn secondary" disabled={savingPassword}>
-                {savingPassword ? 'Actualizando...' : 'Actualizar contraseña'}
+                {savingPassword ? t.updating : t.updatePassword}
               </button>
             </form>
           </section>
-
         </div>
       </div>
     </div>

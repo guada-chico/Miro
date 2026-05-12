@@ -24,13 +24,13 @@
   position: absolute;
   top: 130%;
   right: 0;
-  background: white;
+  background: var(--color-bg-card);
   min-width: 200px;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   padding: 10px 0;
   z-index: 1000;
-  border: 1px solid #eee;
+  border: 1px solid var(--color-border);
   animation: fadeIn 0.2s ease-out;
 }
 
@@ -44,8 +44,8 @@
   padding: 10px 20px;
   font-weight: 800;
   font-size: 0.85rem;
-  border-bottom: 1px solid #f5f5f5;
-  color: #333;
+  border-bottom: 1px solid var(--color-border-section);
+  color: var(--color-text-primary);
 }
 
 .dropdown-content {
@@ -100,7 +100,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: white;
+  background: var(--color-bg-card);
   padding: 6px 16px 6px 8px;
   border-radius: 30px;
   cursor: pointer;
@@ -110,7 +110,7 @@
 .user-avatar-container {
   width: 32px;
   height: 32px;
-  background-color: #f0f0f0;
+  background-color: var(--color-bg-input);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -123,26 +123,44 @@
   gap: 10px;
   padding: 10px 20px;
   font-size: 0.85rem;
-  color: #555;
+  color: var(--color-text-secondary);
   transition: 0.2s;
 }
 
 .dropdown-opt:hover {
-  background: #f3f0e7;
+  background: var(--color-bg-app);
   color: #ff6b35;
 }
 
 .divider {
   margin: 5px 0;
   border: 0;
-  border-top: 1px solid #f5f5f5;
+  border-top: 1px solid var(--color-border-section);
 }
 
 .logout-opt {
   color: #ff4d4d;
 }
 
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
 .rotate {
   transform: rotate(180deg);
   transition: 0.3s;
+}
+
+.icon-bell {
+  position: relative;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+}
+
+.user-icon-default {
+  color: var(--color-text-secondary);
 }

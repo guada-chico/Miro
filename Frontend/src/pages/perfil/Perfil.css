@@ -16,7 +16,7 @@
 
 /* SIDEBAR INFO */
 .perfil-sidebar-info {
-  background: white;
+  background: var(--color-bg-card);
   padding: 40px 20px;
   border-radius: 30px;
   text-align: center;
@@ -78,8 +78,8 @@
 
 .delete-photo-btn:hover { transform: scale(1.1); }
 
-.perfil-sidebar-info h2 { margin: 10px 0 5px; font-size: 1.5rem; }
-.perfil-sidebar-info p { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
+.perfil-sidebar-info h2 { margin: 10px 0 5px; font-size: 1.5rem; color: var(--color-text-primary); }
+.perfil-sidebar-info p { color: var(--color-text-secondary); font-size: 0.9rem; margin-bottom: 30px; }
 
 .logout-perfil-btn {
   display: flex;
@@ -107,7 +107,7 @@
 }
 
 .perfil-card {
-  background: white;
+  background: var(--color-bg-card);
   padding: 35px;
   border-radius: 30px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.02);
@@ -119,7 +119,7 @@
   gap: 12px;
   margin-bottom: 25px;
   font-size: 1.2rem;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .form-group {
@@ -130,7 +130,7 @@
   display: block;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #bbb;
+  color: var(--color-text-label);
   margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -145,15 +145,16 @@
 .input-icon {
   position: absolute;
   left: 15px;
-  color: #ccc;
+  color: var(--color-text-label);
 }
 
 .input-with-icon input {
   width: 100%;
   padding: 14px 15px 14px 45px;
   border-radius: 12px;
-  border: 1px solid #eee;
-  background: #f9f9f9;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-input);
+  color: var(--color-text-primary);
   font-family: inherit;
   font-size: 1rem;
   transition: 0.2s;
@@ -162,7 +163,7 @@
 .input-with-icon input:focus {
   outline: none;
   border-color: #ff6b35;
-  background: white;
+  background: var(--color-bg-card);
   box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.05);
 }
 

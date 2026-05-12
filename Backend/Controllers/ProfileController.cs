@@ -79,5 +79,15 @@ namespace Miro.Controllers
 
             return Ok(new { message = "Foto eliminada correctamente." });
         }
+
+        /// <summary>Elimina la cuenta del usuario y todos sus datos.</summary>
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var (success, error) = await _profileService.DeleteAccountAsync(GetUserId());
+            if (!success) return BadRequest(error);
+
+            return Ok(new { message = "Cuenta eliminada correctamente." });
+        }
     }
 }

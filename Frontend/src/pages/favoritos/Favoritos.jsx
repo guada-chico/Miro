@@ -3,10 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { Star, Heart, BookmarkPlus, ArrowLeft, X } from 'lucide-react';
 import { getMyFavorites, toggleFavorite } from '../../services/favorites-service';
 import { updateReadingStatus } from '../../services/reading-service';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Favoritos.css';
 
 export default function Favoritos() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
+  const t = getT(settings.language).favorites;
+
   const [selectedBook, setSelectedBook] = useState(null);
   const [favoritos, setFavoritos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,21 +27,16 @@ export default function Favoritos() {
     e.stopPropagation();
     try {
       await toggleFavorite(bookId);
-      // Quitar el libro de la lista local
       setFavoritos((prev) => prev.filter((b) => b.id !== bookId));
       if (selectedBook?.id === bookId) setSelectedBook(null);
-    } catch {
-      // silencioso
-    }
+    } catch { /* silencioso */ }
   };
 
   const handleAddToLibrary = async (bookId) => {
     try {
       await updateReadingStatus(bookId, 'WantToRead', 0);
       setSelectedBook(null);
-    } catch {
-      // silencioso
-    }
+    } catch { /* silencioso */ }
   };
 
   return (
@@ -46,13 +46,13 @@ export default function Favoritos() {
           <button className="back-btn" onClick={() => navigate('/inicio')}>
             <ArrowLeft size={20} />
           </button>
-          <h1>Favoritos</h1>
+          <h1>{t.title}</h1>
         </div>
-        <p>Tus historias y autores preferidos en un solo lugar</p>
+        <p>{t.subtitle}</p>
       </header>
 
       {loading ? (
-        <p style={{ textAlign: 'center', color: '#aaa' }}>Cargando favoritos...</p>
+        <p style={{ textAlign: 'center', color: '#aaa' }}>{t.loading}</p>
       ) : (
         <div className="reco-grid">
           {favoritos.length > 0 ? (
@@ -82,13 +82,12 @@ export default function Favoritos() {
           ) : (
             <div className="empty-state">
               <Heart size={48} color="#eee" />
-              <p>Aún no has añadido libros a tus favoritos</p>
+              <p>{t.empty}</p>
             </div>
           )}
         </div>
       )}
 
-      {/* MODAL DE DETALLE */}
       {selectedBook && (
         <div className="modal-overlay" onClick={() => setSelectedBook(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -100,16 +99,16 @@ export default function Favoritos() {
               <div className="modal-details">
                 <div className="reco-rating">
                   <Star size={18} fill="#ff6b35" color="#ff6b35" />
-                  <span style={{fontSize: '1.2rem', fontWeight: 'bold'}}>{selectedBook.rating || 'N/A'}</span>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{selectedBook.rating || 'N/A'}</span>
                 </div>
                 <h2>{selectedBook.title}</h2>
-                <p className="modal-author">de {selectedBook.author}</p>
+                <p className="modal-author">{t.by} {selectedBook.author}</p>
                 <div className="modal-section">
-                  <h3 className="modal-label">Sinopsis</h3>
-                  <p className="modal-text">{selectedBook.description || 'Sin descripción disponible.'}</p>
+                  <h3 className="modal-label">{t.synopsis}</h3>
+                  <p className="modal-text">{selectedBook.description || t.noSynopsis}</p>
                 </div>
                 <button className="add-to-library-btn" onClick={() => handleAddToLibrary(selectedBook.id)}>
-                  Añadir a mi biblioteca
+                  {t.addToLibrary}
                 </button>
               </div>
             </div>

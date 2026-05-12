@@ -3,17 +3,22 @@ import { Search, ChevronDown, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentReading } from '../../services/reading-service';
 import { searchExternalBooks, getOpenLibraryRecommendations, getSpanishClassicsGutenberg } from '../../services/external-books-service';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Inicio.css';
-
-const GENRES = [
-  { key: 'novela',          label: 'Novela' },
-  { key: 'thriller',        label: 'Thriller' },
-  { key: 'romance',         label: 'Romance' },
-  { key: 'fantasia',        label: 'Fantasía' },
-];
 
 export default function Inicio() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
+  const t = getT(settings.language).home;
+
+  const GENRES = [
+    { key: 'novela',   label: t.genres.novela },
+    { key: 'thriller', label: t.genres.thriller },
+    { key: 'romance',  label: t.genres.romance },
+    { key: 'fantasia', label: t.genres.fantasia },
+  ];
+
   const [currentReading, setCurrentReading] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [classics, setClassics] = useState([]);
@@ -24,7 +29,6 @@ export default function Inicio() {
   const [isSearching, setIsSearching] = useState(false);
   const [loadingReco, setLoadingReco] = useState(true);
 
-  // Lectura actual y clásicos al montar
   useEffect(() => {
     getCurrentReading()
       .then(setCurrentReading)
@@ -35,7 +39,6 @@ export default function Inicio() {
       .catch(() => setClassics([]));
   }, []);
 
-  // Recomendaciones en español cuando cambia el género
   useEffect(() => {
     let cancelled = false;
     setLoadingReco(true);
@@ -54,22 +57,22 @@ export default function Inicio() {
     setSearchResults([]);
     try {
       const results = await searchExternalBooks(searchQuery);
-      if (results.length === 0) setSearchError('No se encontraron resultados. Prueba con otro término.');
+      if (results.length === 0) setSearchError(t.noResults);
       setSearchResults(results);
-    } catch (err) {
-      console.error('Error en búsqueda:', err);
-      setSearchError('Error al buscar. Comprueba que el backend está activo.');
+    } catch {
+      setSearchError(t.searchError);
     } finally {
-      setIsSearching(false);    }
+      setIsSearching(false);
+    }
   };
 
   return (
     <div className="inicio-content">
-{/* SECCIÓN: CONTINUAR LEYENDO */}
+      {/* CONTINUAR LEYENDO */}
       <section className="reading-now-section">
-        <h1>Inicio</h1>
+        <h1>{t.title}</h1>
         <div className="section-head">
-          <h3>Continuar leyendo</h3>
+          <h3>{t.continueReading}</h3>
         </div>
         {currentReading ? (
           <div className="reading-card">
@@ -92,48 +95,47 @@ export default function Inicio() {
                     ></div>
                   </div>
                   <span className="progress-text">
-                    {Math.round((currentReading.currentPage / currentReading.book.totalPages) * 100)}% completado
+                    {Math.round((currentReading.currentPage / currentReading.book.totalPages) * 100)}{t.completed}
                   </span>
                 </div>
               )}
-              <button className="continue-btn" onClick={() => navigate('/mis-libros')}>Continuar</button>
+              <button className="continue-btn" onClick={() => navigate('/mis-libros')}>{t.continue}</button>
             </div>
           </div>
         ) : (
           <div className="reading-card">
-            <p style={{ color: '#aaa', padding: '1rem' }}>No tienes ninguna lectura activa. ¡Añade un libro a tu biblioteca!</p>
+            <p style={{ color: '#aaa', padding: '1rem' }}>{t.noActiveReading}</p>
           </div>
         )}
       </section>
 
-      {/* SECCIÓN HERO Y BUSCADOR */}
+      {/* BUSCADOR */}
       <section className="hero">
         <form className="search-capsule" onSubmit={handleSearch}>
           <div className="search-cat">
-            Todas las categorías <ChevronDown size={14} />
+            {t.allCategories} <ChevronDown size={14} />
           </div>
           <div className="search-input">
             <Search size={18} color="#999" />
             <input
               type="text"
-              placeholder="Encuentra el libro que quieres..."
+              placeholder={t.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <button className="search-btn" type="submit" disabled={isSearching}>
-            {isSearching ? 'Buscando...' : 'Buscar'}
+            {isSearching ? t.searching : t.search}
           </button>
         </form>
 
-        {/* Resultados de búsqueda */}
         {searchError && (
           <p style={{ marginTop: '1rem', color: '#e55a25', fontSize: '0.9rem' }}>{searchError}</p>
         )}
         {searchResults.length > 0 && (
           <div style={{ marginTop: '1.5rem' }}>
             <h3 style={{ marginBottom: '1rem', fontSize: '1rem', color: '#555' }}>
-              {searchResults.length} resultados para "{searchQuery}"
+              {searchResults.length} {t.resultsFor} "{searchQuery}"
             </h3>
             <div className="books-grid">
               {searchResults.map((book, i) => (
@@ -153,20 +155,15 @@ export default function Inicio() {
         )}
       </section>
 
-      {/* SECCIÓN: LIBROS RECOMENDADOS EN ESPAÑOL */}
+      {/* RECOMENDADOS */}
       <section className="books-section">
         <div className="section-head">
-          <h3>Recomendados en español</h3>
-          <span
-            className="orange-link"
-            onClick={() => navigate('/recomendaciones')}
-            style={{ cursor: 'pointer' }}
-          >
-            Ver todos &gt;
+          <h3>{t.recommendedInSpanish}</h3>
+          <span className="orange-link" onClick={() => navigate('/recomendaciones')} style={{ cursor: 'pointer' }}>
+            {t.viewAll}
           </span>
         </div>
 
-        {/* Tabs de géneros */}
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
           {GENRES.map((g) => (
             <button
@@ -175,8 +172,8 @@ export default function Inicio() {
               style={{
                 padding: '0.35rem 0.9rem', borderRadius: '20px', border: 'none',
                 cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
-                background: activeGenre === g.key ? '#ff6b35' : '#f0f0f0',
-                color: activeGenre === g.key ? 'white' : '#666',
+                background: activeGenre === g.key ? '#ff6b35' : 'var(--color-bg-input)',
+                color: activeGenre === g.key ? 'white' : 'var(--color-text-secondary)',
                 transition: 'all 0.2s',
               }}
             >
@@ -186,15 +183,11 @@ export default function Inicio() {
         </div>
 
         {loadingReco ? (
-          <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Cargando libros en español...</p>
+          <p style={{ color: '#aaa', fontSize: '0.9rem' }}>{t.loadingBooks}</p>
         ) : (
           <div className="books-grid">
             {recommendations.slice(0, 4).map((book, i) => (
-              <div
-                key={book.isbn || book.id || i}
-                className="book-card"
-                title={`${book.title}${book.author ? ` — ${book.author}` : ''}`}
-              >
+              <div key={book.isbn || book.id || i} className="book-card" title={`${book.title}${book.author ? ` — ${book.author}` : ''}`}>
                 {(book.coverUrl || book.imageUrl) ? (
                   <img src={book.coverUrl || book.imageUrl} alt={book.title} />
                 ) : (
@@ -208,13 +201,11 @@ export default function Inicio() {
         )}
       </section>
 
-      {/* SECCIÓN: CLÁSICOS GRATUITOS (GUTENBERG) */}
+      {/* CLÁSICOS GRATUITOS */}
       <section className="books-section">
         <div className="section-head">
-          <h3>Clásicos para leer gratis</h3>
-          <span style={{ fontSize: '0.85rem', color: '#999' }}>
-            Cortesía de Project Gutenberg
-          </span>
+          <h3>{t.freeClassics}</h3>
+          <span style={{ fontSize: '0.85rem', color: '#999' }}>{t.gutenbergCredit}</span>
         </div>
         <div className="books-grid">
           {classics.map((book) => (
@@ -233,20 +224,7 @@ export default function Inicio() {
                 </div>
               )}
               {book.readUrl && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '8px',
-                    right: '8px',
-                    background: '#ff6b35',
-                    color: 'white',
-                    borderRadius: '50%',
-                    padding: '6px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
+                <div style={{ position: 'absolute', top: '8px', right: '8px', background: '#ff6b35', color: 'white', borderRadius: '50%', padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <ExternalLink size={14} />
                 </div>
               )}

@@ -45,3 +45,9 @@ export const deleteAvatar = async () => {
   const response = await api.delete('/profile/avatar');
   return response.data;
 };
+
+/** Elimina la cuenta del usuario y todos sus datos. */
+export const deleteAccount = async () => {
+  const response = await api.delete('/profile');
+  return response.data;
+};

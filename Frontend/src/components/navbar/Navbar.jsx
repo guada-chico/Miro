@@ -2,10 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, ChevronDown, User, Settings, LogOut } from 'lucide-react';
 import { getUserName, logout } from '../../services/auth-service';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Navbar.css';
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
+  const t = getT(settings.language).navbar;
+
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [userName, setUserName] = useState('Usuario');
@@ -14,9 +19,14 @@ export default function Navbar() {
   const notiMenuRef = useRef(null);
 
   useEffect(() => {
-    // Leer el nombre del token JWT al montar el componente
     const name = getUserName();
     if (name) setUserName(name);
+
+    const handleProfileUpdated = (e) => {
+      if (e.detail?.name) setUserName(e.detail.name);
+    };
+    window.addEventListener('profileUpdated', handleProfileUpdated);
+    return () => window.removeEventListener('profileUpdated', handleProfileUpdated);
   }, []);
 
   useEffect(() => {
@@ -28,7 +38,6 @@ export default function Navbar() {
         setShowNotifications(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showUserMenu, showNotifications]);
@@ -38,19 +47,16 @@ export default function Navbar() {
     navigate('/login');
   };
 
-  const notifications = []; 
+  const notifications = [];
 
   return (
     <header className="navbar-top">
       <div className="navbar-actions">
-        
+
         <div className="notification-container" ref={notiMenuRef}>
-          <div 
-            className="icon-bell" 
-            onClick={() => {
-              setShowNotifications(!showNotifications);
-              setShowUserMenu(false);
-            }}
+          <div
+            className="icon-bell"
+            onClick={() => { setShowNotifications(!showNotifications); setShowUserMenu(false); }}
           >
             <Bell size={20} />
             {notifications.length > 0 && <span className="notification-dot"></span>}
@@ -58,25 +64,21 @@ export default function Navbar() {
 
           {showNotifications && (
             <div className="notifications-dropdown">
-              <div className="dropdown-header">Notificaciones</div>
+              <div className="dropdown-header">{t.notifications}</div>
               <div className="dropdown-content">
-                {notifications.length > 0 ? (
-                  notifications.map((n, i) => <div key={i} className="noti-item">{n}</div>)
-                ) : (
-                  <p className="no-data">No hay notificaciones</p>
-                )}
+                {notifications.length > 0
+                  ? notifications.map((n, i) => <div key={i} className="noti-item">{n}</div>)
+                  : <p className="no-data">{t.noNotifications}</p>
+                }
               </div>
             </div>
           )}
         </div>
 
-        <div 
-          className="user-pill" 
+        <div
+          className="user-pill"
           ref={userMenuRef}
-          onClick={() => {
-            setShowUserMenu(!showUserMenu);
-            setShowNotifications(false);
-          }}
+          onClick={() => { setShowUserMenu(!showUserMenu); setShowNotifications(false); }}
         >
           <div className="user-avatar-container">
             <User size={20} className="user-icon-default" />
@@ -86,25 +88,15 @@ export default function Navbar() {
 
           {showUserMenu && (
             <div className="user-dropdown">
-              {/* 3. Añade el evento onClick para redirigir al perfil[cite: 1] */}
-              <div 
-                className="dropdown-opt" 
-                onClick={() => navigate('/perfil')} 
-              >
-                <User size={14}/> Mi Perfil
+              <div className="dropdown-opt" onClick={() => navigate('/perfil')}>
+                <User size={14} /> {t.myProfile}
               </div>
-              
-              <div 
-              className="dropdown-opt" 
-              onClick={() => navigate('/ajustes')}
-              >
-                <Settings size="{14}"/> Ajustes
-            </div>
-
+              <div className="dropdown-opt" onClick={() => navigate('/ajustes')}>
+                <Settings size={14} /> {t.settings}
+              </div>
               <hr className="divider" />
-              
               <div className="dropdown-opt logout-opt" onClick={handleLogout}>
-                <LogOut size={14}/> Cerrar sesión
+                <LogOut size={14} /> {t.logout}
               </div>
             </div>
           )}
