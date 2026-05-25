@@ -2,17 +2,10 @@ import { useState, useEffect } from 'react';
 import { ExternalLink, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentReading } from '../../services/reading-service';
-import { getSpanishRecommendations, getTopClassics } from '../../services/external-books-service';
+import { getPrhNewReleases, getTopClassics } from '../../services/external-books-service';
 import { useSettings } from '../../context/SettingsContext';
 import { getT } from '../../i18n';
 import './Inicio.css';
-
-const GENRES = [
-  { key: 'novela',          label: 'Novela' },
-  { key: 'thriller',        label: 'Thriller' },
-  { key: 'romance',         label: 'Romance' },
-  { key: 'fantasia',        label: 'Fantasía' },
-];
 
 export default function Inicio() {
   const navigate = useNavigate();
@@ -21,15 +14,26 @@ export default function Inicio() {
   const [currentReading, setCurrentReading] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [classics, setClassics] = useState([]);
-  const [activeGenre, setActiveGenre] = useState('novela');
   const [loadingReco, setLoadingReco] = useState(true);
   const [loadingClassics, setLoadingClassics] = useState(true);
 
-  // Lectura actual y clásicos al montar
+  // Lectura actual, recomendaciones PRH y clásicos al montar
   useEffect(() => {
     getCurrentReading()
       .then(setCurrentReading)
       .catch(() => setCurrentReading(null));
+
+    setLoadingReco(true);
+    getPrhNewReleases(5)
+      .then((data) => {
+        setRecommendations(data ?? []);
+        setLoadingReco(false);
+      })
+      .catch((err) => {
+        console.error('Error cargando recomendaciones PRH:', err);
+        setRecommendations([]);
+        setLoadingReco(false);
+      });
 
     setLoadingClassics(true);
     getTopClassics(8)
@@ -115,25 +119,6 @@ export default function Inicio() {
           </span>
         </div>
 
-        {/* Tabs de géneros */}
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-          {GENRES.map((g) => (
-            <button
-              key={g.key}
-              onClick={() => setActiveGenre(g.key)}
-              style={{
-                padding: '0.35rem 0.9rem', borderRadius: '20px', border: 'none',
-                cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
-                background: activeGenre === g.key ? '#ff6b35' : '#f0f0f0',
-                color: activeGenre === g.key ? 'white' : '#666',
-                transition: 'all 0.2s',
-              }}
-            >
-              {g.label}
-            </button>
-          ))}
-        </div>
-
         {loadingReco ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', gap: '0.5rem' }}>
             <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />
@@ -141,14 +126,14 @@ export default function Inicio() {
           </div>
         ) : (
           <div className="books-grid">
-            {recommendations.slice(0, 4).map((book, i) => (
+            {recommendations.slice(0, 5).map((book, i) => (
               <div
                 key={book.isbn || book.id || i}
                 className="book-card"
                 title={`${book.title}${book.author ? ` — ${book.author}` : ''}`}
               >
-                {book.imageUrl ? (
-                  <img src={book.imageUrl} alt={book.title} />
+                {book.coverUrl || book.imageUrl ? (
+                  <img src={book.coverUrl || book.imageUrl} alt={book.title} />
                 ) : (
                   <div style={{ width: '100%', aspectRatio: '2/3', padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5', borderRadius: '20px' }}>
                     {book.title}
