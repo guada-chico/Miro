@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, ChevronDown, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentReading } from '../../services/reading-service';
-import { searchExternalBooks, getSpanishRecommendations, getTopClassics } from '../../services/external-books-service';
+import { searchPrhBooks, getSpanishRecommendations, getTopClassics } from '../../services/external-books-service';
 import './Inicio.css';
 
 const GENRES = [
@@ -53,7 +53,7 @@ export default function Inicio() {
     setSearchError('');
     setSearchResults([]);
     try {
-      const results = await searchExternalBooks(searchQuery);
+      const results = await searchPrhBooks(searchQuery, 20);
       if (results.length === 0) setSearchError('No se encontraron resultados. Prueba con otro término.');
       setSearchResults(results);
     } catch (err) {

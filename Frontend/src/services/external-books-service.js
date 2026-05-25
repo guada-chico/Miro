@@ -49,6 +49,14 @@ export const searchPrhBooks = async (query, rows = 20) => {
 };
 
 /**
+ * Búsqueda en PRH por categoría BISAC.
+ */
+export const searchPrhByCategory = async (categoryUri, rows = 20) => {
+  const response = await api.get(`/prhbooks/category/${categoryUri}`, { params: { rows } });
+  return response.data;
+};
+
+/**
  * Comprueba si la key de PRH está activa.
  * @returns {{ activated: boolean, message: string }}
  */

@@ -140,3 +140,4 @@ C:\Users\guadalupe.fernandez\source\repos\Miro_fb\Backend\obj\Debug\net8.0\refin
 C:\Users\guadalupe.fernandez\source\repos\Miro_fb\Backend\obj\Debug\net8.0\Miro.pdb
 C:\Users\guadalupe.fernandez\source\repos\Miro_fb\Backend\obj\Debug\net8.0\Miro.genruntimeconfig.cache
 C:\Users\guadalupe.fernandez\source\repos\Miro_fb\Backend\obj\Debug\net8.0\ref\Miro.dll
+C:\Users\guadalupe.fernandez\source\repos\Miro_fb\Backend\bin\Debug\net8.0\Miro.staticwebassets.runtime.json

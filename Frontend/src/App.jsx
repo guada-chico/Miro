@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { SettingsProvider } from './context/SettingsContext';
+import { UserProvider } from './context/UserContext';
 import Sidebar from './components/sidebar/Sidebar';
 import Navbar from './components/navbar/Navbar';
 import Inicio from './pages/inicio/Inicio';
@@ -54,7 +56,11 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <SettingsProvider>
+        <UserProvider>
+          <AppContent />
+        </UserProvider>
+      </SettingsProvider>
     </BrowserRouter>
   );
 }

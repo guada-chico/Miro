@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// URL del backend .NET (puerto HTTPS del perfil "https" en launchSettings.json)
-const API_URL = 'https://localhost:7072/api';
+// URL del backend .NET
+const API_URL = 'http://localhost:5285/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -16,6 +16,9 @@ api.interceptors.request.use((config) => {
   const token = getValidToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log('Token enviado:', token.substring(0, 20) + '...');
+  } else {
+    console.warn('No hay token disponible');
   }
   return config;
 });

@@ -55,7 +55,7 @@ namespace Miro.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
 
                     b.HasData(
                         new
@@ -104,7 +104,7 @@ namespace Miro.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Favorites");
+                    b.ToTable("Favorites", (string)null);
                 });
 
             modelBuilder.Entity("Miro.Models.Friendship", b =>
@@ -134,7 +134,7 @@ namespace Miro.Migrations
 
                     b.HasIndex("UserRequestId");
 
-                    b.ToTable("Friendships");
+                    b.ToTable("Friendships", (string)null);
                 });
 
             modelBuilder.Entity("Miro.Models.Notification", b =>
@@ -163,7 +163,7 @@ namespace Miro.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("Miro.Models.ReadingStatus", b =>
@@ -193,7 +193,7 @@ namespace Miro.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ReadingStatuses");
+                    b.ToTable("ReadingStatuses", (string)null);
                 });
 
             modelBuilder.Entity("Miro.Models.User", b =>
@@ -218,7 +218,7 @@ namespace Miro.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Miro.Models.Favorite", b =>

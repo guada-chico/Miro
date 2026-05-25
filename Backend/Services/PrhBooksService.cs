@@ -24,14 +24,12 @@ namespace Miro.Services
         // ── Novedades (últimos 180 días) ───────────────────────────────────────
         public async Task<IEnumerable<PrhBook>> GetNewReleasesAsync(int rows = 20)
         {
-            // showNewReleases=true → on-sale entre hoy y 180 días atrás
-            // showCovers=true     → solo libros con portada
-            // language=SP         → español
-            // sort=onsale&dir=desc → más recientes primero
-            var url = BuildUrl($"{BaseUrl}/{Domain}/works",
-                $"rows={rows}&sort=onsale&dir=desc&showNewReleases=true&showCovers=true&language=SP" +
-                "&zoom=https://api.penguinrandomhouse.com/resources/v2/title/domains/{domain}/titles/definition" +
-                "&suppressRecordCount=true");
+            // Usar búsqueda con filtro de fecha para novedades
+            var sixMonthsAgo = DateTime.Now.AddMonths(-6).ToString("yyyy-MM-dd");
+            var query = $"onsale:[{sixMonthsAgo} TO *]";
+            var q = Uri.EscapeDataString(query);
+            var url = BuildUrl($"{BaseUrl}/{Domain}/search",
+                $"q={q}&rows={rows}&suppressRecordCount=true");
 
             return await FetchBooksAsync(url);
         }
@@ -39,9 +37,12 @@ namespace Miro.Services
         // ── Próximas publicaciones ─────────────────────────────────────────────
         public async Task<IEnumerable<PrhBook>> GetComingSoonAsync(int rows = 20)
         {
-            var url = BuildUrl($"{BaseUrl}/{Domain}/works",
-                $"rows={rows}&sort=onsale&dir=asc&showComingSoon=true&showCovers=true&language=SP" +
-                "&suppressRecordCount=true");
+            // Buscar libros con fecha de venta en el futuro
+            var today = DateTime.Now.ToString("yyyy-MM-dd");
+            var query = $"onsale:[{today} TO *]";
+            var q = Uri.EscapeDataString(query);
+            var url = BuildUrl($"{BaseUrl}/{Domain}/search",
+                $"q={q}&rows={rows}&suppressRecordCount=true");
 
             return await FetchBooksAsync(url);
         }
@@ -49,19 +50,31 @@ namespace Miro.Services
         // ── Búsqueda libre ─────────────────────────────────────────────────────
         public async Task<IEnumerable<PrhBook>> SearchAsync(string query, int rows = 20)
         {
+            // NOTA: La búsqueda en PRH requiere acceso "Enhanced" o "Premium"
+            // Si tu key no tiene acceso, devuelve lista vacía
             var q = Uri.EscapeDataString(query);
             var url = BuildUrl($"{BaseUrl}/{Domain}/search",
-                $"q={q}&rows={rows}&language=SP&suppressRecordCount=true");
+                $"q={q}&rows={rows}&suppressRecordCount=true");
 
-            return await FetchBooksAsync(url);
+            var results = await FetchBooksAsync(url);
+            
+            // Si no hay resultados, intenta con búsqueda por novedades como fallback
+            if (!results.Any())
+            {
+                return await GetNewReleasesAsync(rows);
+            }
+            
+            return results;
         }
 
         // ── Por categoría BISAC ────────────────────────────────────────────────
         public async Task<IEnumerable<PrhBook>> GetByCategoryAsync(string catUri, int rows = 20)
         {
-            var url = BuildUrl($"{BaseUrl}/{Domain}/works",
-                $"rows={rows}&catUri={Uri.EscapeDataString(catUri)}&sort=onsale&dir=desc" +
-                "&showCovers=true&language=SP&suppressRecordCount=true");
+            // Usar búsqueda con filtro de categoría
+            var query = $"bisacCode:{Uri.EscapeDataString(catUri)}";
+            var q = Uri.EscapeDataString(query);
+            var url = BuildUrl($"{BaseUrl}/{Domain}/search",
+                $"q={q}&rows={rows}&suppressRecordCount=true");
 
             return await FetchBooksAsync(url);
         }

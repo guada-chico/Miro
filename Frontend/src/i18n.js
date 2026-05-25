@@ -1,0 +1,77 @@
+// Traducciones para la aplicación
+const translations = {
+  es: {
+    profile: {
+      title: 'Mi Perfil',
+      subtitle: 'Gestiona tu información personal y seguridad',
+      loading: 'Cargando...',
+      personalInfo: 'Información Personal',
+      name: 'Nombre',
+      namePlaceholder: 'Tu nombre completo',
+      email: 'Email',
+      emailPlaceholder: 'tu@email.com',
+      nameEmailRequired: 'El nombre y email son requeridos',
+      profileUpdated: 'Perfil actualizado correctamente',
+      profileError: 'Error al actualizar el perfil',
+      saving: 'Guardando...',
+      saveChanges: 'Guardar cambios',
+      security: 'Seguridad',
+      currentPassword: 'Contraseña actual',
+      newPassword: 'Nueva contraseña',
+      newPasswordHint: 'Mínimo 8 caracteres, una mayúscula y un carácter especial (!@#$%&*.)',
+      confirmPassword: 'Confirmar contraseña',
+      fillAllFields: 'Por favor completa todos los campos',
+      passwordsMismatch: 'Las contraseñas no coinciden',
+      passwordTooShort: 'La contraseña debe tener mínimo 8 caracteres',
+      passwordNoUpper: 'La contraseña debe contener al menos una mayúscula',
+      passwordNoSpecial: 'La contraseña debe contener un carácter especial (!@#$%&*.)',
+      passwordUpdated: 'Contraseña actualizada correctamente',
+      updating: 'Actualizando...',
+      updatePassword: 'Actualizar contraseña',
+      photoUpdated: 'Foto actualizada correctamente',
+      photoError: 'Error al actualizar la foto',
+      photoDeleted: 'Foto eliminada correctamente',
+      photoDeleteError: 'Error al eliminar la foto',
+      logout: 'Cerrar sesión',
+    }
+  },
+  en: {
+    profile: {
+      title: 'My Profile',
+      subtitle: 'Manage your personal information and security',
+      loading: 'Loading...',
+      personalInfo: 'Personal Information',
+      name: 'Name',
+      namePlaceholder: 'Your full name',
+      email: 'Email',
+      emailPlaceholder: 'your@email.com',
+      nameEmailRequired: 'Name and email are required',
+      profileUpdated: 'Profile updated successfully',
+      profileError: 'Error updating profile',
+      saving: 'Saving...',
+      saveChanges: 'Save changes',
+      security: 'Security',
+      currentPassword: 'Current password',
+      newPassword: 'New password',
+      newPasswordHint: 'Minimum 8 characters, one uppercase and one special character (!@#$%&*.)',
+      confirmPassword: 'Confirm password',
+      fillAllFields: 'Please fill all fields',
+      passwordsMismatch: 'Passwords do not match',
+      passwordTooShort: 'Password must be at least 8 characters',
+      passwordNoUpper: 'Password must contain at least one uppercase letter',
+      passwordNoSpecial: 'Password must contain a special character (!@#$%&*.)',
+      passwordUpdated: 'Password updated successfully',
+      updating: 'Updating...',
+      updatePassword: 'Update password',
+      photoUpdated: 'Photo updated successfully',
+      photoError: 'Error updating photo',
+      photoDeleted: 'Photo deleted successfully',
+      photoDeleteError: 'Error deleting photo',
+      logout: 'Logout',
+    }
+  }
+};
+
+export function getT(language = 'es') {
+  return translations[language] || translations.es;
+}

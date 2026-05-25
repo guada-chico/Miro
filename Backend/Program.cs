@@ -101,6 +101,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Servir archivos estáticos (para avatares)
+app.UseStaticFiles();
+
 // IMPORTANTE: CORS siempre antes de Auth
 app.UseCors("AllowReact");
 

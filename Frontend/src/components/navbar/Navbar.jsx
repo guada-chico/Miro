@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Importa el hook de navegación
+import { useNavigate } from 'react-router-dom';
 import { Bell, ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import { useUser } from '../../context/UserContext';
+import { logout } from '../../services/auth-service';
 import './Navbar.css';
 
 export default function Navbar() {
-  const navigate = useNavigate(); // 2. Inicializa la función de navegación
+  const navigate = useNavigate();
+  const { user } = useUser();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -27,7 +30,15 @@ export default function Navbar() {
     };
   }, [showUserMenu, showNotifications]);
 
-  const notifications = []; 
+  const notifications = [];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  // Avatar por defecto con iniciales
+  const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'U')}&background=ff6b35&color=fff&size=40`; 
 
   return (
     <header className="navbar-top">
@@ -68,31 +79,41 @@ export default function Navbar() {
           }}
         >
           <div className="user-avatar-container">
-            <User size={20} className="user-icon-default" />
+            <img 
+              src={user.avatarUrl || defaultAvatar} 
+              alt="Avatar" 
+              className="user-avatar-img"
+              onError={(e) => { e.target.src = defaultAvatar; }}
+            />
           </div>
-          <span className="user-name">Davis Workman</span>
+          <span className="user-name">{user.name}</span>
           <ChevronDown size={14} className={showUserMenu ? 'rotate' : ''} />
 
           {showUserMenu && (
             <div className="user-dropdown">
-              {/* 3. Añade el evento onClick para redirigir al perfil[cite: 1] */}
               <div 
                 className="dropdown-opt" 
-                onClick={() => navigate('/perfil')} 
+                onClick={() => {
+                  navigate('/perfil');
+                  setShowUserMenu(false);
+                }}
               >
                 <User size={14}/> Mi Perfil
               </div>
               
               <div 
-              className="dropdown-opt" 
-              onClick={() => navigate('/ajustes')}
+                className="dropdown-opt" 
+                onClick={() => {
+                  navigate('/ajustes');
+                  setShowUserMenu(false);
+                }}
               >
-                <Settings size="{14}"/> Ajustes
-            </div>
+                <Settings size={14}/> Ajustes
+              </div>
 
               <hr className="divider" />
               
-              <div className="dropdown-opt logout-opt" onClick={() => navigate('/login')}>
+              <div className="dropdown-opt logout-opt" onClick={handleLogout}>
                 <LogOut size={14}/> Cerrar sesión
               </div>
             </div>
