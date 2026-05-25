@@ -122,51 +122,7 @@ export default function Inicio() {
       </section>
 
       {/* SECCIÓN HERO Y BUSCADOR */}
-      <section className="hero">
-        <form className="search-capsule" onSubmit={handleSearch}>
-          <div className="search-cat">
-            {t.allCategories} <ChevronDown size={14} />
-          </div>
-          <div className="search-input">
-            <Search size={18} color="#999" />
-            <input
-              type="text"
-              placeholder={t.search}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <button className="search-btn" type="submit" disabled={isSearching}>
-            {isSearching ? t.searching : t.search}
-          </button>
-        </form>
-
-        {/* Resultados de búsqueda */}
-        {searchError && (
-          <p style={{ marginTop: '1rem', color: '#e55a25', fontSize: '0.9rem' }}>{searchError}</p>
-        )}
-        {searchResults.length > 0 && (
-          <div style={{ marginTop: '1.5rem' }}>
-            <h3 style={{ marginBottom: '1rem', fontSize: '1rem', color: '#555' }}>
-              {searchResults.length} resultados para "{searchQuery}"
-            </h3>
-            <div className="books-grid">
-              {searchResults.map((book, i) => (
-                <div key={book.isbn || book.id || i} className="book-card" title={`${book.title} — ${book.author}`}>
-                  {book.imageUrl
-                    ? <img src={book.imageUrl} alt={book.title} />
-                    : (
-                      <div style={{ padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {book.title}
-                      </div>
-                    )
-                  }
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </section>
+      {/* Buscador removido */}
 
       {/* SECCIÓN: LIBROS RECOMENDADOS EN ESPAÑOL */}
       <section className="books-section">
@@ -227,10 +183,17 @@ export default function Inicio() {
       <section className="books-section">
         <div className="section-head">
           <h3>{t.freeClassics}</h3>
-          <span style={{ fontSize: '0.85rem', color: '#999' }}>
-            {t.gutenbergCredit}
+          <span
+            className="orange-link"
+            onClick={() => navigate('/clasicos')}
+            style={{ cursor: 'pointer' }}
+          >
+            {t.viewAll} &gt;
           </span>
         </div>
+        <p style={{ fontSize: '0.85rem', color: '#999', marginBottom: '1rem' }}>
+          {t.gutenbergCredit}
+        </p>
         {loadingClassics ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', gap: '0.5rem' }}>
             <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />
