@@ -92,10 +92,25 @@
   gap: 25px; 
 }
 
-.book-card img { 
-  width: 100%; 
-  border-radius: 20px; 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+.book-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.book-card img {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  border-radius: 20px;
 }
 
 /* --- ESTILOS PARA "LIBRO LEYENDO" --- */
@@ -193,4 +208,13 @@
 .continue-btn:hover {
   background: #1e2d29;
   transform: scale(1.02);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

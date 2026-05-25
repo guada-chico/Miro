@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, ChevronDown, ExternalLink } from 'lucide-react';
+import { Search, ChevronDown, ExternalLink, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentReading } from '../../services/reading-service';
 import { searchPrhBooks, getSpanishRecommendations, getTopClassics } from '../../services/external-books-service';
@@ -27,6 +27,7 @@ export default function Inicio() {
   const [searchError, setSearchError] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [loadingReco, setLoadingReco] = useState(true);
+  const [loadingClassics, setLoadingClassics] = useState(true);
 
   // Lectura actual y clásicos al montar
   useEffect(() => {
@@ -34,9 +35,17 @@ export default function Inicio() {
       .then(setCurrentReading)
       .catch(() => setCurrentReading(null));
 
+    setLoadingClassics(true);
     getTopClassics(8)
-      .then(setClassics)
-      .catch(() => setClassics([]));
+      .then((data) => {
+        setClassics(data ?? []);
+        setLoadingClassics(false);
+      })
+      .catch((err) => {
+        console.error('Error cargando clásicos:', err);
+        setClassics([]);
+        setLoadingClassics(false);
+      });
   }, []);
 
   // Recomendaciones en español cuando cambia el género
@@ -204,7 +213,7 @@ export default function Inicio() {
                 {book.imageUrl ? (
                   <img src={book.imageUrl} alt={book.title} />
                 ) : (
-                  <div style={{ padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '100%', aspectRatio: '2/3', padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5', borderRadius: '20px' }}>
                     {book.title}
                   </div>
                 )}
@@ -222,43 +231,52 @@ export default function Inicio() {
             {t.gutenbergCredit}
           </span>
         </div>
-        <div className="books-grid">
-          {classics.map((book) => (
-            <div
-              key={book.id}
-              className="book-card"
-              style={{ position: 'relative', cursor: 'pointer' }}
-              onClick={() => book.readUrl && window.open(book.readUrl, '_blank')}
-              title={`${book.title} — ${book.authors.join(', ')}`}
-            >
-              {book.coverUrl ? (
-                <img src={book.coverUrl} alt={book.title} />
-              ) : (
-                <div style={{ padding: '0.5rem', fontSize: '0.75rem', textAlign: 'center', color: '#888' }}>
-                  {book.title}
-                </div>
-              )}
-              {book.readUrl && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '8px',
-                    right: '8px',
-                    background: '#ff6b35',
-                    color: 'white',
-                    borderRadius: '50%',
-                    padding: '6px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <ExternalLink size={14} />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        {loadingClassics ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', gap: '0.5rem' }}>
+            <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />
+            <p style={{ color: '#aaa', fontSize: '0.9rem' }}>{t.loading}</p>
+          </div>
+        ) : classics.length > 0 ? (
+          <div className="books-grid">
+            {classics.map((book) => (
+              <div
+                key={book.id}
+                className="book-card"
+                style={{ position: 'relative', cursor: 'pointer' }}
+                onClick={() => book.readUrl && window.open(book.readUrl, '_blank')}
+                title={`${book.title} — ${book.authors.join(', ')}`}
+              >
+                {book.coverUrl ? (
+                  <img src={book.coverUrl} alt={book.title} />
+                ) : (
+                  <div style={{ width: '100%', aspectRatio: '2/3', padding: '0.5rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5', borderRadius: '20px' }}>
+                    {book.title}
+                  </div>
+                )}
+                {book.readUrl && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '8px',
+                      background: '#ff6b35',
+                      color: 'white',
+                      borderRadius: '50%',
+                      padding: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <ExternalLink size={14} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{ color: '#aaa', fontSize: '0.9rem', textAlign: 'center', padding: '2rem' }}>No se encontraron clásicos en español</p>
+        )}
       </section>
     </div>
   );

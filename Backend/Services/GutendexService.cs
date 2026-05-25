@@ -15,15 +15,30 @@ namespace Miro.Services
 
         public async Task<IEnumerable<GutendexBook>> SearchBooksAsync(string query)
         {
-            var url = $"{BaseUrl}?search={Uri.EscapeDataString(query)}";
+            var url = $"{BaseUrl}?search={Uri.EscapeDataString(query)}&languages=es";
             return await FetchBooks(url);
         }
 
         public async Task<IEnumerable<GutendexBook>> GetTopBooksAsync(int count = 20)
         {
-            // Gutendex ordena por popularidad (descargas) por defecto
-            var url = $"{BaseUrl}?page=1";
-            var books = await FetchBooks(url);
+            // Estrategia: obtener libros populares sin filtro de idioma
+            // Gutendex ordena por descargas por defecto
+            var books = new List<GutendexBook>();
+            int page = 1;
+            int maxPages = 3; // Limitar a 3 páginas
+            
+            while (books.Count < count && page <= maxPages)
+            {
+                var url = $"{BaseUrl}?page={page}";
+                var pageBooks = await FetchBooks(url);
+                
+                if (!pageBooks.Any()) break;
+                
+                books.AddRange(pageBooks);
+                page++;
+            }
+            
+            // Si no encontramos libros en español, devolver los que tenemos
             return books.Take(count);
         }
 
@@ -42,6 +57,14 @@ namespace Miro.Services
 
             foreach (var item in results.EnumerateArray())
             {
+                // Extraer idiomas
+                var languages = new List<string>();
+                if (item.TryGetProperty("languages", out var langsArr))
+                {
+                    foreach (var lang in langsArr.EnumerateArray())
+                        languages.Add(lang.GetString() ?? "");
+                }
+
                 // Extraer autores
                 var authors = new List<string>();
                 if (item.TryGetProperty("authors", out var authorsArr))
@@ -72,14 +95,6 @@ namespace Miro.Services
                         readUrl = txt.GetString();
                     else if (fmts.TryGetProperty("text/plain; charset=us-ascii", out var ascii))
                         readUrl = ascii.GetString();
-                }
-
-                // Extraer idiomas
-                var languages = new List<string>();
-                if (item.TryGetProperty("languages", out var langsArr))
-                {
-                    foreach (var lang in langsArr.EnumerateArray())
-                        languages.Add(lang.GetString() ?? "");
                 }
 
                 books.Add(new GutendexBook
