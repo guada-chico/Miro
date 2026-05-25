@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, BookOpen, ExternalLink } from 'lucide-react';
 import { getSpanishClassics, searchExternalBooks } from '../../services/external-books-service';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Clasicos.css';
 
 export default function Clasicos() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
+  const t = getT(settings.language);
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -39,9 +43,9 @@ export default function Clasicos() {
           <button className="back-btn" onClick={() => navigate('/inicio')}>
             <ArrowLeft size={20} />
           </button>
-          <h1>Clásicos en Español</h1>
+          <h1>{t.clasicos.title}</h1>
         </div>
-        <p>Literatura clásica española — powered by Google Books</p>
+        <p>{t.clasicos.subtitle}</p>
       </header>
 
       {/* Buscador */}
@@ -49,18 +53,18 @@ export default function Clasicos() {
         <Search size={20} color="#bbb" />
         <input
           type="text"
-          placeholder="Buscar por título, autor (ej: Cervantes, García Lorca, Galdós)..."
+          placeholder={t.clasicos.searchPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <button type="submit" disabled={isSearching}>
-          {isSearching ? 'Buscando...' : 'Buscar'}
+          {isSearching ? t.clasicos.searching : t.clasicos.search}
         </button>
       </form>
 
       {loading ? (
         <p style={{ textAlign: 'center', color: '#aaa', marginTop: '2rem' }}>
-          Cargando clásicos...
+          {t.clasicos.loadingClassics}
         </p>
       ) : (
         <div className="clasicos-grid">
@@ -96,7 +100,7 @@ export default function Clasicos() {
         <div style={{ textAlign: 'center', color: '#aaa', marginTop: '3rem' }}>
           <BookOpen size={48} color="#ddd" />
           <p style={{ marginTop: '1rem' }}>
-            No se encontraron resultados. Intenta con otro término de búsqueda.
+            {t.clasicos.noResults}
           </p>
         </div>
       )}

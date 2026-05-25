@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, HelpCircle, MessageSquare, Mail, ChevronDown, ChevronUp } from 'lucide-react';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Ayuda.css';
 
 export default function Ayuda() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
+  const t = getT(settings.language);
   const [activeIndex, setActiveIndex] = useState(null);
 
   const faqs = [
@@ -33,9 +37,9 @@ export default function Ayuda() {
           <button className="back-btn" onClick={() => navigate('/inicio')}>
             <ArrowLeft size={20} />
           </button>
-          <h1>Centro de Ayuda</h1>
+          <h1>{t.ayuda.title}</h1>
         </div>
-        <p>¿Tienes alguna duda? Estamos aquí para ayudarte</p>
+        <p>{t.ayuda.subtitle}</p>
       </header>
 
       {/* BUSCADOR DE AYUDA */}
@@ -49,7 +53,7 @@ export default function Ayuda() {
       <div className="ayuda-grid">
         {/* SECCIÓN DE PREGUNTAS FRECUENTES */}
         <section className="faq-section">
-          <h3><HelpCircle size={22} color="#ff6b35" /> Preguntas Frecuentes</h3>
+          <h3><HelpCircle size={22} color="#ff6b35" /> {t.ayuda.faq}</h3>
           <div className="faq-list">
             {faqs.map((faq, index) => (
               <div 

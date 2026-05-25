@@ -1,25 +1,28 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star, Heart, BookmarkPlus, ArrowLeft, X } from 'lucide-react';
 import { getSpanishRecommendations } from '../../services/external-books-service';
 import { toggleFavorite } from '../../services/favorites-service';
 import { updateReadingStatus } from '../../services/reading-service';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Recomendaciones.css';
 
 const GENRES = [
-  { key: 'novela',           label: 'Novela' },
-  { key: 'thriller',         label: 'Thriller' },
-  { key: 'romance',          label: 'Romance' },
-  { key: 'fantasia',         label: 'Fantasía' },
-  { key: 'ciencia ficcion',  label: 'Ciencia ficción' },
-  { key: 'historia',         label: 'Historia' },
-  { key: 'biografia',        label: 'Biografía' },
-  { key: 'autoayuda',        label: 'Autoayuda' },
+  { key: 'novela',           label: 'novela' },
+  { key: 'thriller',         label: 'thriller' },
+  { key: 'romance',          label: 'romance' },
+  { key: 'fantasia',         label: 'fantasia' },
+  { key: 'ciencia ficcion',  label: 'cienciaFiccion' },
+  { key: 'historia',         label: 'historia' },
+  { key: 'biografia',        label: 'biografia' },
+  { key: 'autoayuda',        label: 'autoayuda' },
 ];
 
 export default function Recomendaciones() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
+  const t = getT(settings.language);
   const [selectedBook, setSelectedBook] = useState(null);
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,9 +56,9 @@ export default function Recomendaciones() {
           <button className="back-btn" onClick={() => navigate('/inicio')}>
             <ArrowLeft size={20} />
           </button>
-          <h1>Recomendaciones</h1>
+          <h1>{t.recomendaciones.title}</h1>
         </div>
-        <p>Libros actuales en español — powered by Google Books</p>
+        <p>{t.recomendaciones.subtitle}</p>
       </header>
 
       {/* Filtro de géneros */}
@@ -72,15 +75,15 @@ export default function Recomendaciones() {
               transition: 'all 0.2s',
             }}
           >
-            {g.label}
+            {t.recomendaciones.genres[g.label]}
           </button>
         ))}
       </div>
 
       {loading ? (
-        <p style={{ textAlign: 'center', color: '#aaa', padding: '2rem' }}>Cargando libros en español...</p>
+        <p style={{ textAlign: 'center', color: '#aaa', padding: '2rem' }}>{t.recomendaciones.loadingBooks}</p>
       ) : books.length === 0 ? (
-        <p style={{ textAlign: 'center', color: '#aaa', padding: '2rem' }}>No se encontraron resultados para este género.</p>
+        <p style={{ textAlign: 'center', color: '#aaa', padding: '2rem' }}>{t.recomendaciones.noResults}</p>
       ) : (
         <div className="reco-grid">
           {books.map((book, i) => (
@@ -130,11 +133,11 @@ export default function Recomendaciones() {
                   </p>
                 )}
                 <div className="modal-section">
-                  <h3 className="modal-label">Sinopsis</h3>
-                  <p className="modal-text">{selectedBook.synopsis || selectedBook.description || 'Sinopsis no disponible.'}</p>
+                  <h3 className="modal-label">{t.recomendaciones.synopsis}</h3>
+                  <p className="modal-text">{selectedBook.synopsis || selectedBook.description || t.recomendaciones.noSynopsis}</p>
                 </div>
                 <button className="add-to-library-btn" onClick={() => handleAddToLibrary(selectedBook.id)}>
-                  Añadir a mi biblioteca
+                  {t.recomendaciones.addToLibrary}
                 </button>
               </div>
             </div>

@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, UserPlus, MessageCircle, BookOpen } from 'lucide-react';
 import { getMyFriends, sendFriendRequest } from '../../services/friendship-service';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Amigos.css';
 
 export default function Amigos() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
+  const t = getT(settings.language);
   const [amigos, setAmigos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [receiverId, setReceiverId] = useState('');
@@ -23,9 +27,9 @@ export default function Amigos() {
     try {
       await sendFriendRequest(id);
       setReceiverId('');
-      alert('Solicitud enviada');
+      alert(t.amigos.requestSent);
     } catch {
-      alert('No se pudo enviar la solicitud');
+      alert(t.amigos.requestError);
     }
   };
 
@@ -36,9 +40,9 @@ export default function Amigos() {
           <button className="back-btn" onClick={() => navigate('/inicio')}>
             <ArrowLeft size={20} />
           </button>
-          <h1>Mis amigos</h1>
+          <h1>{t.amigos.title}</h1>
         </div>
-        <p>Conecta con otros lectores y descubre qué están leyendo</p>
+        <p>{t.amigos.subtitle}</p>
       </header>
 
       {/* SECCIÓN DE BUSCADOR Y ENVÍO DE SOLICITUD */}
@@ -47,18 +51,18 @@ export default function Amigos() {
           <Search size={20} color="#bbb" />
           <input
             type="number"
-            placeholder="Nombre del usuario para agregar..."
+            placeholder={t.amigos.searchPlaceholder}
             value={receiverId}
             onChange={(e) => setReceiverId(e.target.value)}
           />
         </div>
         <button className="add-friend-btn" onClick={handleSendRequest}>
-          <UserPlus size={18} /> Enviar solicitud
+          <UserPlus size={18} /> {t.amigos.sendRequest}
         </button>
       </div>
 
       {loading ? (
-        <p style={{ textAlign: 'center', color: '#aaa' }}>Cargando amigos...</p>
+        <p style={{ textAlign: 'center', color: '#aaa' }}>{t.amigos.loadingFriends}</p>
       ) : (
         <div className="amigos-grid">
           {amigos.length > 0 ? amigos.map((amigo) => (
@@ -80,7 +84,7 @@ export default function Amigos() {
               <div className="amigo-current-reading">
                 <div className="reading-label">
                   <BookOpen size={14} color="#ff6b35" />
-                  <span>Amigo desde</span>
+                  <span>{t.amigos.friendSince}</span>
                 </div>
                 <p className="reading-book-title">
                   {amigo.createdAt ? new Date(amigo.createdAt).toLocaleDateString() : 'Recientemente'}
@@ -88,11 +92,11 @@ export default function Amigos() {
               </div>
 
               <div className="amigo-actions">
-                <button className="action-btn profile">Ver perfil</button>
+                <button className="action-btn profile">{t.amigos.viewProfile}</button>
               </div>
             </div>
           )) : (
-            <p style={{ textAlign: 'center', color: '#aaa' }}>Aún no tienes amigos. ¡Envía una solicitud!</p>
+            <p style={{ textAlign: 'center', color: '#aaa' }}>{t.amigos.noFriends}</p>
           )}
         </div>
       )}

@@ -1,11 +1,27 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Sparkles, Library, Heart, Users, BookMarked, Settings, HelpCircle, LogOut } from "lucide-react";
 import logoMiro from "../../assets/logo_miro_sf.png";
+import { useTranslation } from "../../hooks/useTranslation";
 import "./Sidebar.css";
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const t = useTranslation();
+
+  const menuItems = [
+    { path: '/inicio', icon: Home, label: t.sidebar?.home || 'Inicio' },
+    { path: '/recomendaciones', icon: Sparkles, label: t.sidebar?.recommendations || 'Recomendaciones' },
+    { path: '/mis-libros', icon: Library, label: t.sidebar?.myBooks || 'Mis libros' },
+    { path: '/favoritos', icon: Heart, label: t.sidebar?.favorites || 'Favoritos' },
+    { path: '/amigos', icon: Users, label: t.sidebar?.friends || 'Amigos' },
+    { path: '/clasicos', icon: BookMarked, label: t.sidebar?.classics || 'Clásicos gratis' },
+  ];
+
+  const otherItems = [
+    { path: '/ajustes', icon: Settings, label: t.sidebar?.settings || 'Ajustes' },
+    { path: '/ayuda', icon: HelpCircle, label: t.sidebar?.help || 'Ayuda' },
+  ];
 
   return (
     <aside className="sidebar">
@@ -19,62 +35,30 @@ export default function Sidebar() {
       </div>
       
       <nav className="sidebar-menu">
-        <p className="label">MENU</p>
+        <p className="label">{t.sidebar?.menu || 'MENU'}</p>
         <ul>
-          <li 
-            className={`nav-item ${location.pathname === '/inicio' ? 'active' : ''}`}
-            onClick={() => navigate('/inicio')}
-          >
-            <Home size={18}/> <span>Inicio</span>
-          </li>
-
-          <li 
-            className={`nav-item ${location.pathname === '/recomendaciones' ? 'active' : ''}`}
-            onClick={() => navigate('/recomendaciones')}
-          >
-            <Sparkles size={18}/> <span>Recomendaciones</span>
-          </li>
-
-          <li 
-            className={`nav-item ${location.pathname === '/mis-libros' ? 'active' : ''}`}
-            onClick={() => navigate('/mis-libros')}
+          {menuItems.map((item) => (
+            <li 
+              key={item.path}
+              className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+              onClick={() => navigate(item.path)}
             >
-            <Library size={18}/> <span>Mis libros</span>
-        </li>
-          <li 
-            className={`nav-item ${location.pathname === '/favoritos' ? 'active' : ''}`}
-            onClick={() => navigate('/favoritos')}
-          >
-            <Heart size={18}/> <span>Favoritos</span>
-          </li>
-          <li 
-            className={`nav-item ${location.pathname === '/amigos' ? 'active' : ''}`}
-            onClick={() => navigate('/amigos')}
-          >
-            <Users size={18}/> <span>Amigos</span>
-          </li>
-          <li 
-            className={`nav-item ${location.pathname === '/clasicos' ? 'active' : ''}`}
-            onClick={() => navigate('/clasicos')}
-          >
-            <BookMarked size={18}/> <span>Clásicos gratis</span>
-          </li>
+              <item.icon size={18}/> <span>{item.label}</span>
+            </li>
+          ))}
         </ul>
 
-        <p className="label">OTROS</p>
+        <p className="label">{t.sidebar?.other || 'OTROS'}</p>
         <ul>
-          <li 
-            className={`nav-item ${location.pathname === '/ajustes' ? 'active' : ''}`}
-            onClick={() => navigate('/ajustes')}
-          >
-            <Settings size={18}/> <span>Ajustes</span>
-          </li>
-          <li 
-            className={`nav-item ${location.pathname === '/ayuda' ? 'active' : ''}`} 
-            onClick={() => navigate('/ayuda')}
+          {otherItems.map((item) => (
+            <li 
+              key={item.path}
+              className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+              onClick={() => navigate(item.path)}
             >
-              <HelpCircle size="{18}"/> <span>Ayuda</span>
-          </li>
+              <item.icon size={18}/> <span>{item.label}</span>
+            </li>
+          ))}
         </ul>
       </nav>
     </aside>

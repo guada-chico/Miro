@@ -1,8 +1,13 @@
 .app-layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: 280px 1fr;
   height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+  background: #f3f0e7;
+  transition: background-color 0.3s ease;
+}
+
+:root[data-theme="dark"] .app-layout {
+  background: #1a1a1a;
 }
 
 .content-area {
@@ -11,38 +16,36 @@
   flex-direction: column;
   background-color: #f3f0e7;
   overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+:root[data-theme="dark"] .content-area {
+  background-color: #1a1a1a;
 }
 
 .main-view {
   flex: 1;
   padding: 20px 40px;
   overflow-y: auto;
+  background-color: #f3f0e7;
+  transition: background-color 0.3s ease;
 }
 
-.app-layout {
-  display: flex;
-  background: #f3f0e7;
-  min-height: 100vh;
-}
-.content-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Layout normal con Sidebar */
-.app-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  height: 100vh;
+:root[data-theme="dark"] .main-view {
+  background-color: #1a1a1a;
 }
 
 /* Layout especial para el Login */
 .login-layout {
-  display: block; /* Quita el grid */
+  display: block;
   width: 100vw;
   height: 100vh;
-  background-color: #f5f5f5; /* O el color de fondo de tu login */
+  background-color: #f5f5f5;
+  transition: background-color 0.3s ease;
+}
+
+:root[data-theme="dark"] .login-layout {
+  background-color: #1a1a1a;
 }
 
 .login-content {

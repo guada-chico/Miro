@@ -23,6 +23,13 @@ export function SettingsProvider({ children }) {
   // Guardar configuración en localStorage cuando cambia
   useEffect(() => {
     localStorage.setItem('appSettings', JSON.stringify(settings));
+    
+    // Aplicar tema al documento
+    if (settings.theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
   }, [settings]);
 
   const updateSettings = (newSettings) => {

@@ -3,6 +3,8 @@ import { Search, ChevronDown, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentReading } from '../../services/reading-service';
 import { searchPrhBooks, getSpanishRecommendations, getTopClassics } from '../../services/external-books-service';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Inicio.css';
 
 const GENRES = [
@@ -14,6 +16,8 @@ const GENRES = [
 
 export default function Inicio() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
+  const t = getT(settings.language).common;
   const [currentReading, setCurrentReading] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [classics, setClassics] = useState([]);
@@ -39,6 +43,7 @@ export default function Inicio() {
   useEffect(() => {
     let cancelled = false;
     setLoadingReco(true);
+    setRecommendations([]);
     getSpanishRecommendations(activeGenre)
       .then((data) => { if (!cancelled) setRecommendations(data ?? []); })
       .catch(() => { if (!cancelled) setRecommendations([]); })
@@ -54,22 +59,23 @@ export default function Inicio() {
     setSearchResults([]);
     try {
       const results = await searchPrhBooks(searchQuery, 20);
-      if (results.length === 0) setSearchError('No se encontraron resultados. Prueba con otro término.');
+      if (results.length === 0) setSearchError(t.noResults);
       setSearchResults(results);
     } catch (err) {
       console.error('Error en búsqueda:', err);
-      setSearchError('Error al buscar. Comprueba que el backend está activo.');
+      setSearchError(t.searchError);
     } finally {
-      setIsSearching(false);    }
+      setIsSearching(false);
+    }
   };
 
   return (
     <div className="inicio-content">
-{/* SECCIÓN: CONTINUAR LEYENDO */}
+      {/* SECCIÓN: CONTINUAR LEYENDO */}
       <section className="reading-now-section">
         <h1>Inicio</h1>
         <div className="section-head">
-          <h3>Continuar leyendo</h3>
+          <h3>{t.continueReading}</h3>
         </div>
         {currentReading ? (
           <div className="reading-card">
@@ -92,16 +98,16 @@ export default function Inicio() {
                     ></div>
                   </div>
                   <span className="progress-text">
-                    {Math.round((currentReading.currentPage / currentReading.book.totalPages) * 100)}% completado
+                    {Math.round((currentReading.currentPage / currentReading.book.totalPages) * 100)}% {t.completed}
                   </span>
                 </div>
               )}
-              <button className="continue-btn" onClick={() => navigate('/mis-libros')}>Continuar</button>
+              <button className="continue-btn" onClick={() => navigate('/mis-libros')}>{t.continueReading}</button>
             </div>
           </div>
         ) : (
           <div className="reading-card">
-            <p style={{ color: '#aaa', padding: '1rem' }}>No tienes ninguna lectura activa. ¡Añade un libro a tu biblioteca!</p>
+            <p style={{ color: '#aaa', padding: '1rem' }}>{t.noActiveReading}</p>
           </div>
         )}
       </section>
@@ -110,19 +116,19 @@ export default function Inicio() {
       <section className="hero">
         <form className="search-capsule" onSubmit={handleSearch}>
           <div className="search-cat">
-            Todas las categorías <ChevronDown size={14} />
+            {t.allCategories} <ChevronDown size={14} />
           </div>
           <div className="search-input">
             <Search size={18} color="#999" />
             <input
               type="text"
-              placeholder="Encuentra el libro que quieres..."
+              placeholder={t.search}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <button className="search-btn" type="submit" disabled={isSearching}>
-            {isSearching ? 'Buscando...' : 'Buscar'}
+            {isSearching ? t.searching : t.search}
           </button>
         </form>
 
@@ -156,13 +162,13 @@ export default function Inicio() {
       {/* SECCIÓN: LIBROS RECOMENDADOS EN ESPAÑOL */}
       <section className="books-section">
         <div className="section-head">
-          <h3>Recomendados en español</h3>
+          <h3>{t.recommendedInSpanish}</h3>
           <span
             className="orange-link"
             onClick={() => navigate('/recomendaciones')}
             style={{ cursor: 'pointer' }}
           >
-            Ver todos &gt;
+            {t.viewAll} &gt;
           </span>
         </div>
 
@@ -186,7 +192,7 @@ export default function Inicio() {
         </div>
 
         {loadingReco ? (
-          <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Cargando libros en español...</p>
+          <p style={{ color: '#aaa', fontSize: '0.9rem' }}>{t.loading}</p>
         ) : (
           <div className="books-grid">
             {recommendations.slice(0, 4).map((book, i) => (
@@ -211,9 +217,9 @@ export default function Inicio() {
       {/* SECCIÓN: CLÁSICOS GRATUITOS (GUTENBERG) */}
       <section className="books-section">
         <div className="section-head">
-          <h3>Clásicos para leer gratis</h3>
+          <h3>{t.freeClassics}</h3>
           <span style={{ fontSize: '0.85rem', color: '#999' }}>
-            Cortesía de Project Gutenberg
+            {t.gutenbergCredit}
           </span>
         </div>
         <div className="books-grid">

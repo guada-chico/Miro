@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, CheckCircle, Calendar as CalendarIcon, Trophy, Plus, ArrowLeft } from 'lucide-react';
 import { getMyLibrary } from '../../services/reading-service';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Biblioteca.css';
 
 export default function Biblioteca() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
+  const t = getT(settings.language);
   const [tabActiva, setTabActiva] = useState('leyendo');
   const [misLibrosData, setMisLibrosData] = useState({
     leyendo: [],
@@ -46,9 +50,9 @@ export default function Biblioteca() {
           <button className="back-btn" onClick={() => navigate('/inicio')}>
             <ArrowLeft size={20} />
           </button>
-          <h1>Mis Libros</h1>
+          <h1>{t.biblioteca.title}</h1>
         </div>
-        <p>Gestiona tu biblioteca personal y progreso de lectura</p>
+        <p>{t.biblioteca.subtitle}</p>
       </header>
 
       <div className="stats-grid">
@@ -104,14 +108,14 @@ export default function Biblioteca() {
                 className={`tab ${tabActiva === tab ? 'active' : ''}`}
                 onClick={() => setTabActiva(tab)}
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab === 'leyendo' ? t.biblioteca.currentlyReading : tab === 'leídos' ? t.biblioteca.completed : t.biblioteca.wantToRead}
               </button>
             ))}
           </div>
 
           <div className="books-mini-grid">
             {loading ? (
-              <p style={{ textAlign: 'center', color: '#aaa' }}>Cargando biblioteca...</p>
+              <p style={{ textAlign: 'center', color: '#aaa' }}>{t.biblioteca.loadingBooks}</p>
             ) : misLibrosData[tabActiva].length > 0 ? (
               misLibrosData[tabActiva].map((item) => {
                 const book = item.book || item;
@@ -145,7 +149,7 @@ export default function Biblioteca() {
                 );
               })
             ) : (
-              <p style={{ textAlign: 'center', color: '#aaa' }}>No hay libros en esta categoría</p>
+              <p style={{ textAlign: 'center', color: '#aaa' }}>{t.biblioteca.noBooks}</p>
             )}
 
             <button className="add-book-btn">

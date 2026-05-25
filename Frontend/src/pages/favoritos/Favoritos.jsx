@@ -3,10 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { Star, Heart, BookmarkPlus, ArrowLeft, X } from 'lucide-react';
 import { getMyFavorites, toggleFavorite } from '../../services/favorites-service';
 import { updateReadingStatus } from '../../services/reading-service';
+import { useSettings } from '../../context/SettingsContext';
+import { getT } from '../../i18n';
 import './Favoritos.css';
 
 export default function Favoritos() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
+  const t = getT(settings.language);
   const [selectedBook, setSelectedBook] = useState(null);
   const [favoritos, setFavoritos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,13 +50,13 @@ export default function Favoritos() {
           <button className="back-btn" onClick={() => navigate('/inicio')}>
             <ArrowLeft size={20} />
           </button>
-          <h1>Favoritos</h1>
+          <h1>{t.favoritos.title}</h1>
         </div>
-        <p>Tus historias y autores preferidos en un solo lugar</p>
+        <p>{t.favoritos.subtitle}</p>
       </header>
 
       {loading ? (
-        <p style={{ textAlign: 'center', color: '#aaa' }}>Cargando favoritos...</p>
+        <p style={{ textAlign: 'center', color: '#aaa' }}>{t.favoritos.loadingFavorites}</p>
       ) : (
         <div className="reco-grid">
           {favoritos.length > 0 ? (
@@ -82,7 +86,7 @@ export default function Favoritos() {
           ) : (
             <div className="empty-state">
               <Heart size={48} color="#eee" />
-              <p>Aún no has añadido libros a tus favoritos</p>
+              <p>{t.favoritos.noFavorites}</p>
             </div>
           )}
         </div>
