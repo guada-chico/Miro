@@ -48,18 +48,6 @@ export default function Inicio() {
       });
   }, []);
 
-  // Recomendaciones en español cuando cambia el género
-  useEffect(() => {
-    let cancelled = false;
-    setLoadingReco(true);
-    setRecommendations([]);
-    getSpanishRecommendations(activeGenre)
-      .then((data) => { if (!cancelled) setRecommendations(data ?? []); })
-      .catch(() => { if (!cancelled) setRecommendations([]); })
-      .finally(() => { if (!cancelled) setLoadingReco(false); });
-    return () => { cancelled = true; };
-  }, [activeGenre]);
-
   return (
     <div className="inicio-content">
       {/* SECCIÓN: CONTINUAR LEYENDO */}
