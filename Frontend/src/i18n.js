@@ -111,9 +111,9 @@ const translations = {
       requestError: 'No se pudo enviar la solicitud',
     },
     clasicos: {
-      title: 'Clásicos en Español',
-      subtitle: 'Literatura clásica española — powered by Google Books',
-      searchPlaceholder: 'Buscar por título, autor (ej: Cervantes, García Lorca, Galdós)...',
+      title: 'Clásicos para leer gratis',
+      subtitle: 'Cortesía de Project Gutenberg',
+      searchPlaceholder: 'Buscar por título, autor, etc.',
       searching: 'Buscando...',
       search: 'Buscar',
       loadingClassics: 'Cargando clásicos...',

@@ -17,10 +17,6 @@ export default function Clasicos() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isSearchMode, setIsSearchMode] = useState(false);
 
-  useEffect(() => {
-    loadPage(1);
-  }, []);
-
   const loadPage = async (page) => {
     setLoading(true);
     try {
@@ -36,9 +32,17 @@ export default function Clasicos() {
     }
   };
 
+  useEffect(() => {
+    loadPage(1);
+  }, []);
+
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      // Si el buscador está vacío, volver a cargar la página 1
+      loadPage(1);
+      return;
+    }
     setIsSearching(true);
     setIsSearchMode(true);
     try {
@@ -49,6 +53,16 @@ export default function Clasicos() {
       setBooks([]);
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    
+    // Si el usuario borra todo el contenido, volver a mostrar todos los libros
+    if (!value.trim() && isSearchMode) {
+      loadPage(1);
     }
   };
 
@@ -81,7 +95,7 @@ export default function Clasicos() {
           type="text"
           placeholder={t.clasicos.searchPlaceholder}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handleSearchChange}
         />
         <button type="submit" disabled={isSearching}>
           {isSearching ? t.clasicos.searching : t.clasicos.search}

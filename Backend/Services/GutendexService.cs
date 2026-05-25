@@ -1,4 +1,5 @@
 using Miro.Services.Interfaces;
+using Miro.Models;
 using System.Text.Json;
 
 namespace Miro.Services
@@ -15,8 +16,11 @@ namespace Miro.Services
 
         public async Task<IEnumerable<GutendexBook>> SearchBooksAsync(string query)
         {
-            var url = $"{BaseUrl}?search={Uri.EscapeDataString(query)}&languages=es";
-            return await FetchBooks(url);
+            // Buscar sin filtro de idioma para obtener más resultados
+            var url = $"{BaseUrl}?search={Uri.EscapeDataString(query)}";
+            var results = await FetchBooks(url);
+            Console.WriteLine($"[GutendexService] Búsqueda '{query}': {results.Count()} resultados encontrados");
+            return results;
         }
 
         public async Task<IEnumerable<GutendexBook>> GetTopBooksAsync(int count = 20)
