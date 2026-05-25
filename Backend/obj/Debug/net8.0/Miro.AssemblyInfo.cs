@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Miro")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8ccac1d79975652697a08d33ee7cf7ea3e576b9c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5411e8d70c371cfee7ad9e00f0751f27961449ec")]
 [assembly: System.Reflection.AssemblyProductAttribute("Miro")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Miro")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

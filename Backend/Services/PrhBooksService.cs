@@ -24,9 +24,8 @@ namespace Miro.Services
         // ── Novedades (últimos 180 días) ───────────────────────────────────────
         public async Task<IEnumerable<PrhBook>> GetNewReleasesAsync(int rows = 20)
         {
-            // Usar búsqueda con filtro de fecha para novedades
-            var sixMonthsAgo = DateTime.Now.AddMonths(-6).ToString("yyyy-MM-dd");
-            var query = $"onsale:[{sixMonthsAgo} TO *]";
+            // Usar búsqueda general por término para obtener libros
+            var query = "novela";
             var q = Uri.EscapeDataString(query);
             var url = BuildUrl($"{BaseUrl}/{Domain}/search",
                 $"q={q}&rows={rows}&suppressRecordCount=true");
