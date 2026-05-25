@@ -22,5 +22,10 @@ namespace Miro.Services.Interfaces
         /// Obtiene los libros más descargados (para la sección de clásicos).
         /// </summary>
         Task<IEnumerable<GutendexBook>> GetTopBooksAsync(int count = 20);
+
+        /// <summary>
+        /// Obtiene libros por página para paginación.
+        /// </summary>
+        Task<IEnumerable<GutendexBook>> GetBooksByPageAsync(int page = 1);
     }
 }

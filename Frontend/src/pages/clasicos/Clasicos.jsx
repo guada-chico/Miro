@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, BookOpen, ExternalLink } from 'lucide-react';
-import { getSpanishClassics, searchExternalBooks } from '../../services/external-books-service';
+import { ArrowLeft, Search, BookOpen, ExternalLink, Loader, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getClassicsByPage, searchGutendexBooks } from '../../services/external-books-service';
 import { useSettings } from '../../context/SettingsContext';
 import { getT } from '../../i18n';
 import './Clasicos.css';
@@ -14,25 +14,51 @@ export default function Clasicos() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isSearchMode, setIsSearchMode] = useState(false);
 
   useEffect(() => {
-    getSpanishClassics()
-      .then(setBooks)
-      .catch(() => setBooks([]))
-      .finally(() => setLoading(false));
+    loadPage(1);
   }, []);
+
+  const loadPage = async (page) => {
+    setLoading(true);
+    try {
+      const data = await getClassicsByPage(page);
+      setBooks(data ?? []);
+      setCurrentPage(page);
+      setIsSearchMode(false);
+    } catch (err) {
+      console.error('Error cargando página:', err);
+      setBooks([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     setIsSearching(true);
+    setIsSearchMode(true);
     try {
-      const results = await searchExternalBooks(searchQuery);
-      setBooks(results);
+      const results = await searchGutendexBooks(searchQuery);
+      setBooks(results ?? []);
+      setCurrentPage(1);
     } catch {
       setBooks([]);
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const handleNextPage = () => {
+    loadPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      loadPage(currentPage - 1);
     }
   };
 
@@ -63,16 +89,23 @@ export default function Clasicos() {
       </form>
 
       {loading ? (
-        <p style={{ textAlign: 'center', color: '#aaa', marginTop: '2rem' }}>
-          {t.clasicos.loadingClassics}
-        </p>
-      ) : (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', gap: '0.5rem' }}>
+          <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />
+          <p style={{ color: '#aaa', fontSize: '0.9rem' }}>{t.clasicos.loadingClassics}</p>
+        </div>
+      ) : books.length > 0 ? (
         <div className="clasicos-grid">
           {books.map((book, i) => (
-            <div key={book.isbn || book.id || i} className="clasico-card">
+            <div 
+              key={book.id || book.isbn || i} 
+              className="clasico-card"
+              style={{ cursor: book.readUrl ? 'pointer' : 'default' }}
+              onClick={() => book.readUrl && window.open(book.readUrl, '_blank')}
+              title={book.readUrl ? 'Haz clic para leer' : book.title}
+            >
               <div className="clasico-cover">
-                {book.imageUrl ? (
-                  <img src={book.imageUrl} alt={book.title} />
+                {book.coverUrl || book.imageUrl ? (
+                  <img src={book.coverUrl || book.imageUrl} alt={book.title} />
                 ) : (
                   <div className="no-cover">
                     <BookOpen size={32} color="#ccc" />
@@ -82,26 +115,73 @@ export default function Clasicos() {
               
               <div className="clasico-info">
                 <h4>{book.title}</h4>
-                <p className="clasico-author">{book.author}</p>
-                {book.category && (
-                  <div className="clasico-meta">
-                    <span className="clasico-lang">
-                      {book.category}
-                    </span>
+                <p className="clasico-author">{book.authors ? book.authors.join(', ') : book.author}</p>
+                {book.readUrl && (
+                  <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#ff6b35', fontSize: '0.75rem' }}>
+                    <ExternalLink size={12} />
+                    <span>Leer en línea</span>
                   </div>
                 )}
               </div>
             </div>
           ))}
         </div>
-      )}
-
-      {!loading && books.length === 0 && (
+      ) : (
         <div style={{ textAlign: 'center', color: '#aaa', marginTop: '3rem' }}>
           <BookOpen size={48} color="#ddd" />
           <p style={{ marginTop: '1rem' }}>
             {t.clasicos.noResults}
           </p>
+        </div>
+      )}
+
+      {/* Paginación */}
+      {!isSearchMode && books.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '2rem', padding: '1rem' }}>
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              background: currentPage === 1 ? '#e0e0e0' : '#ff6b35',
+              color: currentPage === 1 ? '#999' : 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+              fontWeight: 600,
+              transition: 'background 0.2s'
+            }}
+          >
+            <ChevronLeft size={18} />
+            Anterior
+          </button>
+          <span style={{ color: '#666', fontWeight: 600 }}>
+            Página {currentPage}
+          </span>
+          <button
+            onClick={handleNextPage}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              background: '#ff6b35',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: 600,
+              transition: 'background 0.2s'
+            }}
+            onMouseEnter={(e) => e.target.style.background = '#e55a25'}
+            onMouseLeave={(e) => e.target.style.background = '#ff6b35'}
+          >
+            Siguiente
+            <ChevronRight size={18} />
+          </button>
         </div>
       )}
     </div>

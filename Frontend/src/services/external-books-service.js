@@ -87,3 +87,8 @@ export const getTopClassics = async (count = 20) => {
   const response = await api.get('/gutendex/top', { params: { count } });
   return response.data;
 };
+
+export const getClassicsByPage = async (page = 1) => {
+  const response = await api.get('/gutendex/page', { params: { page } });
+  return response.data;
+};

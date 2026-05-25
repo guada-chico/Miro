@@ -42,6 +42,14 @@ namespace Miro.Services
             return books.Take(count);
         }
 
+        public async Task<IEnumerable<GutendexBook>> GetBooksByPageAsync(int page = 1)
+        {
+            // Devolver exactamente 20 libros por página
+            var url = $"{BaseUrl}?page={page}";
+            var allBooks = await FetchBooks(url);
+            return allBooks.Take(20);
+        }
+
         private async Task<IEnumerable<GutendexBook>> FetchBooks(string url)
         {
             var response = await _httpClient.GetAsync(url);

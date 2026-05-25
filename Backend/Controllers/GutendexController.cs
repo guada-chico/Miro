@@ -36,5 +36,15 @@ namespace Miro.Controllers
             var results = await _gutendexService.GetTopBooksAsync(count);
             return Ok(results);
         }
+
+        /// <summary>
+        /// Devuelve libros por página para paginación.
+        /// </summary>
+        [HttpGet("page")]
+        public async Task<IActionResult> GetByPage([FromQuery] int page = 1)
+        {
+            var results = await _gutendexService.GetBooksByPageAsync(page);
+            return Ok(results);
+        }
     }
 }
