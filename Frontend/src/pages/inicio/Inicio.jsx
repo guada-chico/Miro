@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ExternalLink, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentReading } from '../../services/reading-service';
-import { getTopClassics } from '../../services/external-books-service';
+import { getPrhNewReleases, getTopClassics } from '../../services/external-books-service';
 import { useSettings } from '../../context/SettingsContext';
 import { getT } from '../../i18n';
 import './Inicio.css';
@@ -17,20 +17,20 @@ export default function Inicio() {
   const [loadingReco, setLoadingReco] = useState(true);
   const [loadingClassics, setLoadingClassics] = useState(true);
 
-  // Lectura actual, recomendaciones y clásicos Gutendex al montar
+  // Lectura actual, recomendaciones PRH y clásicos Gutendex al montar
   useEffect(() => {
     getCurrentReading()
       .then(setCurrentReading)
       .catch(() => setCurrentReading(null));
 
     setLoadingReco(true);
-    getTopClassics(5)
+    getPrhNewReleases(5)
       .then((data) => {
         setRecommendations(data ?? []);
         setLoadingReco(false);
       })
       .catch((err) => {
-        console.error('Error cargando recomendaciones:', err);
+        console.error('Error cargando recomendaciones PRH:', err);
         setRecommendations([]);
         setLoadingReco(false);
       });
@@ -112,7 +112,7 @@ export default function Inicio() {
             <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />
             <p style={{ color: '#aaa', fontSize: '0.9rem' }}>{t.loading}</p>
           </div>
-        ) : (
+        ) : recommendations.length > 0 ? (
           <div className="books-grid">
             {recommendations.slice(0, 5).map((book, i) => (
               <div
@@ -130,6 +130,8 @@ export default function Inicio() {
               </div>
             ))}
           </div>
+        ) : (
+          <p style={{ color: '#aaa', fontSize: '0.9rem', textAlign: 'center', padding: '2rem' }}>No se encontraron libros recomendados</p>
         )}
       </section>
 

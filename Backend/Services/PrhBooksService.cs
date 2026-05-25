@@ -24,14 +24,14 @@ namespace Miro.Services
         // ── Novedades (últimos 180 días) ───────────────────────────────────────
         public async Task<IEnumerable<PrhBook>> GetNewReleasesAsync(int rows = 20)
         {
-            // Intentar obtener libros sin filtro (solo si la key tiene acceso)
+            // Usar búsqueda con filtro de fecha para novedades
+            var sixMonthsAgo = DateTime.Now.AddMonths(-6).ToString("yyyy-MM-dd");
+            var query = $"onsale:[{sixMonthsAgo} TO *]";
+            var q = Uri.EscapeDataString(query);
             var url = BuildUrl($"{BaseUrl}/{Domain}/search",
-                $"q=*&rows={rows}&suppressRecordCount=true");
+                $"q={q}&rows={rows}&suppressRecordCount=true");
 
-            var results = await FetchBooksAsync(url);
-            
-            // Si no hay resultados, devolver lista vacía (PRH requiere acceso Enhanced)
-            return results;
+            return await FetchBooksAsync(url);
         }
 
         // ── Próximas publicaciones ─────────────────────────────────────────────
