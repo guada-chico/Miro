@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ExternalLink, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentReading } from '../../services/reading-service';
-import { getPrhNewReleases, getTopClassics } from '../../services/external-books-service';
+import { getTopClassics } from '../../services/external-books-service';
 import { useSettings } from '../../context/SettingsContext';
 import { getT } from '../../i18n';
 import './Inicio.css';
@@ -17,20 +17,20 @@ export default function Inicio() {
   const [loadingReco, setLoadingReco] = useState(true);
   const [loadingClassics, setLoadingClassics] = useState(true);
 
-  // Lectura actual, recomendaciones PRH y clásicos al montar
+  // Lectura actual, recomendaciones y clásicos al montar
   useEffect(() => {
     getCurrentReading()
       .then(setCurrentReading)
       .catch(() => setCurrentReading(null));
 
     setLoadingReco(true);
-    getPrhNewReleases(5)
+    getTopClassics(5)
       .then((data) => {
         setRecommendations(data ?? []);
         setLoadingReco(false);
       })
       .catch((err) => {
-        console.error('Error cargando recomendaciones PRH:', err);
+        console.error('Error cargando recomendaciones:', err);
         setRecommendations([]);
         setLoadingReco(false);
       });
@@ -94,7 +94,7 @@ export default function Inicio() {
       {/* SECCIÓN HERO Y BUSCADOR */}
       {/* Buscador removido */}
 
-      {/* SECCIÓN: LIBROS RECOMENDADOS EN ESPAÑOL */}
+      {/* SECCIÓN: LIBROS RECOMENDADOS */}
       <section className="books-section">
         <div className="section-head">
           <h3>{t.recommendedInSpanish}</h3>
@@ -116,15 +116,35 @@ export default function Inicio() {
           <div className="books-grid">
             {recommendations.slice(0, 5).map((book, i) => (
               <div
-                key={book.isbn || book.id || i}
+                key={book.id || book.isbn || i}
                 className="book-card"
-                title={`${book.title}${book.author ? ` — ${book.author}` : ''}`}
+                style={{ position: 'relative', cursor: book.readUrl ? 'pointer' : 'default' }}
+                onClick={() => book.readUrl && window.open(book.readUrl, '_blank')}
+                title={`${book.title} — ${book.authors ? book.authors.join(', ') : book.author}`}
               >
                 {book.coverUrl || book.imageUrl ? (
                   <img src={book.coverUrl || book.imageUrl} alt={book.title} />
                 ) : (
-                  <div style={{ width: '100%', aspectRatio: '2/3', padding: '0.75rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5', borderRadius: '20px' }}>
+                  <div style={{ width: '100%', aspectRatio: '2/3', padding: '0.5rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5', borderRadius: '20px' }}>
                     {book.title}
+                  </div>
+                )}
+                {book.readUrl && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '8px',
+                      background: '#ff6b35',
+                      color: 'white',
+                      borderRadius: '50%',
+                      padding: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <ExternalLink size={14} />
                   </div>
                 )}
               </div>
