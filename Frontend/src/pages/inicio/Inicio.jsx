@@ -17,7 +17,7 @@ export default function Inicio() {
   const [loadingReco, setLoadingReco] = useState(true);
   const [loadingClassics, setLoadingClassics] = useState(true);
 
-  // Lectura actual, recomendaciones y clásicos al montar
+  // Lectura actual, recomendaciones y clásicos Gutendex al montar
   useEffect(() => {
     getCurrentReading()
       .then(setCurrentReading)
@@ -118,33 +118,13 @@ export default function Inicio() {
               <div
                 key={book.id || book.isbn || i}
                 className="book-card"
-                style={{ position: 'relative', cursor: book.readUrl ? 'pointer' : 'default' }}
-                onClick={() => book.readUrl && window.open(book.readUrl, '_blank')}
-                title={`${book.title} — ${book.authors ? book.authors.join(', ') : book.author}`}
+                title={`${book.title} — ${book.author}`}
               >
                 {book.coverUrl || book.imageUrl ? (
                   <img src={book.coverUrl || book.imageUrl} alt={book.title} />
                 ) : (
                   <div style={{ width: '100%', aspectRatio: '2/3', padding: '0.5rem', fontSize: '0.75rem', textAlign: 'center', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5', borderRadius: '20px' }}>
                     {book.title}
-                  </div>
-                )}
-                {book.readUrl && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '8px',
-                      right: '8px',
-                      background: '#ff6b35',
-                      color: 'white',
-                      borderRadius: '50%',
-                      padding: '6px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <ExternalLink size={14} />
                   </div>
                 )}
               </div>
