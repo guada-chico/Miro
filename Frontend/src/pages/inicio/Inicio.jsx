@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Search, ChevronDown, ExternalLink, Loader } from 'lucide-react';
+import { ExternalLink, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentReading } from '../../services/reading-service';
-import { searchPrhBooks, getSpanishRecommendations, getTopClassics } from '../../services/external-books-service';
+import { getSpanishRecommendations, getTopClassics } from '../../services/external-books-service';
 import { useSettings } from '../../context/SettingsContext';
 import { getT } from '../../i18n';
 import './Inicio.css';
@@ -22,10 +22,6 @@ export default function Inicio() {
   const [recommendations, setRecommendations] = useState([]);
   const [classics, setClassics] = useState([]);
   const [activeGenre, setActiveGenre] = useState('novela');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchError, setSearchError] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
   const [loadingReco, setLoadingReco] = useState(true);
   const [loadingClassics, setLoadingClassics] = useState(true);
 
@@ -59,24 +55,6 @@ export default function Inicio() {
       .finally(() => { if (!cancelled) setLoadingReco(false); });
     return () => { cancelled = true; };
   }, [activeGenre]);
-
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-    setIsSearching(true);
-    setSearchError('');
-    setSearchResults([]);
-    try {
-      const results = await searchPrhBooks(searchQuery, 20);
-      if (results.length === 0) setSearchError(t.noResults);
-      setSearchResults(results);
-    } catch (err) {
-      console.error('Error en búsqueda:', err);
-      setSearchError(t.searchError);
-    } finally {
-      setIsSearching(false);
-    }
-  };
 
   return (
     <div className="inicio-content">
@@ -157,7 +135,10 @@ export default function Inicio() {
         </div>
 
         {loadingReco ? (
-          <p style={{ color: '#aaa', fontSize: '0.9rem' }}>{t.loading}</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', gap: '0.5rem' }}>
+            <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />
+            <p style={{ color: '#aaa', fontSize: '0.9rem' }}>{t.loading}</p>
+          </div>
         ) : (
           <div className="books-grid">
             {recommendations.slice(0, 4).map((book, i) => (
