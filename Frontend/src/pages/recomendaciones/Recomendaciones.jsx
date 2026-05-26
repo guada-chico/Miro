@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star, Heart, BookmarkPlus, ArrowLeft, X } from 'lucide-react';
-import { getSpanishRecommendations } from '../../services/external-books-service';
+import { getMyRecommendations } from '../../services/recommendations-service';
 import { toggleFavorite } from '../../services/favorites-service';
 import { updateReadingStatus } from '../../services/reading-service';
 import { useSettings } from '../../context/SettingsContext';
@@ -26,16 +26,15 @@ export default function Recomendaciones() {
   const [selectedBook, setSelectedBook] = useState(null);
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeGenre, setActiveGenre] = useState('novela');
 
   useEffect(() => {
     setLoading(true);
     setBooks([]);
-    getSpanishRecommendations(activeGenre)
+    getMyRecommendations()
       .then((data) => setBooks(data ?? []))
       .catch(() => setBooks([]))
       .finally(() => setLoading(false));
-  }, [activeGenre]);
+  }, []);
 
   const handleToggleFavorite = async (e, bookId) => {
     e.stopPropagation();
@@ -61,24 +60,7 @@ export default function Recomendaciones() {
         <p>{t.recomendaciones.subtitle}</p>
       </header>
 
-      {/* Filtro de géneros */}
-      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-        {GENRES.map((g) => (
-          <button
-            key={g.key}
-            onClick={() => setActiveGenre(g.key)}
-            style={{
-              padding: '0.4rem 1rem', borderRadius: '20px', border: 'none',
-              cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600,
-              background: activeGenre === g.key ? '#ff6b35' : '#f0f0f0',
-              color: activeGenre === g.key ? 'white' : '#666',
-              transition: 'all 0.2s',
-            }}
-          >
-            {t.recomendaciones.genres[g.label]}
-          </button>
-        ))}
-      </div>
+
 
       {loading ? (
         <p style={{ textAlign: 'center', color: '#aaa', padding: '2rem' }}>{t.recomendaciones.loadingBooks}</p>
@@ -105,6 +87,7 @@ export default function Recomendaciones() {
               <div className="reco-info">
                 <h4>{book.title}</h4>
                 <p>{book.author}</p>
+                {book.category && <p style={{ fontSize: '0.7rem', color: '#999' }}>{book.category}</p>}
               </div>
             </div>
           ))}
@@ -129,7 +112,12 @@ export default function Recomendaciones() {
                 <p className="modal-author">de {selectedBook.author}</p>
                 {selectedBook.category && (
                   <p style={{ fontSize: '0.8rem', color: '#ff6b35', marginBottom: '0.5rem' }}>
-                    {selectedBook.category}
+                    {selectedBook.category || 'Penguin Random House'}
+                  </p>
+                )}
+                {selectedBook.isbn && (
+                  <p style={{ fontSize: '0.75rem', color: '#999', marginBottom: '0.5rem' }}>
+                    ISBN: {selectedBook.isbn}
                   </p>
                 )}
                 <div className="modal-section">

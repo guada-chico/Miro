@@ -68,9 +68,10 @@ namespace Miro.Services
             // Buscar en PRH por cada género favorito (limitado a 3 géneros para no saturar)
             foreach (var genre in favoriteGenres.Take(3))
             {
+                if (string.IsNullOrEmpty(genre)) continue;
                 try
                 {
-                    var prhBooks = await _prhService.SearchAsync(genre, 10);
+                    var prhBooks = await _prhService.SearchAsync(genre!, 10);
                     foreach (var p in prhBooks)
                     {
                         var key = (p.Title + "|" + p.Author).ToLowerInvariant();
