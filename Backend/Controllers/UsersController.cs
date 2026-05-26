@@ -143,7 +143,8 @@ namespace Miro.Controllers
         /// Actualiza el avatar del usuario
         /// </summary>
         [HttpPost("avatar")]
-        public async Task<IActionResult> UpdateAvatar([FromForm] IFormFile file)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateAvatar()
         {
             try
             {
@@ -153,6 +154,7 @@ namespace Miro.Controllers
                 if (user == null)
                     return NotFound("Usuario no encontrado");
 
+                var file = Request.Form?.Files?.FirstOrDefault();
                 if (file == null || file.Length == 0)
                     return BadRequest("No se proporcionó archivo");
 

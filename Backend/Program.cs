@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Miro.Services.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +88,8 @@ builder.Services.AddSwaggerGen(c =>
             new string[] {}
         }
     });
+    c.OperationFilter<FormFileOperationFilter>();
+    // Aquí se puede agregar el operation filter para manejo de IFormFile
 });
 
 var app = builder.Build();
